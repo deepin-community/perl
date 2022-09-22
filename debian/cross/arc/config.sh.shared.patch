@@ -1,0 +1,67 @@
+--- config.sh.static   2021-09-08 21:43:57.490565454 +0300
++++ config.sh.shared   2021-09-08 21:45:24.253867068 +0300
+@@ -14,15 +14,15 @@
+
+ : Configure command line arguments.
+ config_arg0='../Configure'
+-config_args='-Dmksymlinks -Dusethreads -Duselargefiles -Dcc=arc-linux-gnu-gcc -Dcpp=arc-linux-gnu-cpp -Dld=arc-linux-gnu-gcc -Dccflags=-DDEBIAN -DAPPLLIB_EXP="/usr/lib/arc-linux-gnu/perl-base" -Wdate-time -D_FORTIFY_SOURCE=2 -g -O2 -ffile-prefix-map=/root/perl-5.32.1=. -fstack-protector-strong -Wformat -Werror=format-security -Dldflags= -Wl,-z,relro -Dlddlflags=-shared -Wl,-z,relro -Dcccdlflags=-fPIC -Darchname=arc-linux-gnu -Dprefix=/usr -Dprivlib=/usr/share/perl/5.32 -Darchlib=/usr/lib/arc-linux-gnu/perl/5.32 -Dvendorprefix=/usr -Dvendorlib=/usr/share/perl5 -Dvendorarch=/usr/lib/arc-linux-gnu/perl5/5.32 -Dsiteprefix=/usr/local -Dsitelib=/usr/local/share/perl/5.32.1 -Dsitearch=/usr/local/lib/arc-linux-gnu/perl/5.32.1 -Dman1dir=/usr/share/man/man1 -Dman3dir=/usr/share/man/man3 -Dsiteman1dir=/usr/local/man/man1 -Dsiteman3dir=/usr/local/man/man3 -Duse64bitint -Dman1ext=1 -Dman3ext=3perl -Dpager=/usr/bin/sensible-pager -Uafs -Ud_csh -Ud_ualarm -Uusesfio -Uusenm -Ui_libutil -Ui_xlocale -Uversiononly -DDEBUGGING=-g -Doptimize=-O2 -dEs -Uuseshrplib'
+-config_argc=40
++config_args='-Dmksymlinks -Dusethreads -Duselargefiles -Dcc=arc-linux-gnu-gcc -Dcpp=arc-linux-gnu-cpp -Dld=arc-linux-gnu-gcc -Dccflags=-DDEBIAN -Wdate-time -D_FORTIFY_SOURCE=2 -g -O2 -ffile-prefix-map=/root/perl-5.32.1=. -fstack-protector-strong -Wformat -Werror=format-security -Dldflags= -Wl,-z,relro -Dlddlflags=-shared -Wl,-z,relro -Dcccdlflags=-fPIC -Darchname=arc-linux-gnu -Dprefix=/usr -Dprivlib=/usr/share/perl/5.32 -Darchlib=/usr/lib/arc-linux-gnu/perl/5.32 -Dvendorprefix=/usr -Dvendorlib=/usr/share/perl5 -Dvendorarch=/usr/lib/arc-linux-gnu/perl5/5.32 -Dsiteprefix=/usr/local -Dsitelib=/usr/local/share/perl/5.32.1 -Dsitearch=/usr/local/lib/arc-linux-gnu/perl/5.32.1 -Dman1dir=/usr/share/man/man1 -Dman3dir=/usr/share/man/man3 -Dsiteman1dir=/usr/local/man/man1 -Dsiteman3dir=/usr/local/man/man3 -Duse64bitint -Dman1ext=1 -Dman3ext=3perl -Dpager=/usr/bin/sensible-pager -Uafs -Ud_csh -Ud_ualarm -Uusesfio -Uusenm -Ui_libutil -Ui_xlocale -Uversiononly -DDEBUGGING=-g -Doptimize=-O2 -dEs -Duseshrplib -Dlibperl=libperl.so.5.32.1'
++config_argc=41
+ config_arg1='-Dmksymlinks'
+ config_arg2='-Dusethreads'
+ config_arg3='-Duselargefiles'
+ config_arg4='-Dcc=arc-linux-gnu-gcc'
+ config_arg5='-Dcpp=arc-linux-gnu-cpp'
+ config_arg6='-Dld=arc-linux-gnu-gcc'
+-config_arg7='-Dccflags=-DDEBIAN -DAPPLLIB_EXP="/usr/lib/arc-linux-gnu/perl-base" -Wdate-time -D_FORTIFY_SOURCE=2 -g -O2 -ffile-prefix-map=/root/perl-5.32.1=. -fstack-protector-strong -Wformat -Werror=format-security'
++config_arg7='-Dccflags=-DDEBIAN -Wdate-time -D_FORTIFY_SOURCE=2 -g -O2 -ffile-prefix-map=/root/perl-5.32.1=. -fstack-protector-strong -Wformat -Werror=format-security'
+ config_arg8='-Dldflags= -Wl,-z,relro'
+ config_arg9='-Dlddlflags=-shared -Wl,-z,relro'
+ config_arg10='-Dcccdlflags=-fPIC'
+@@ -55,7 +55,8 @@
+ config_arg37='-DDEBUGGING=-g'
+ config_arg38='-Doptimize=-O2'
+ config_arg39='-dEs'
+-config_arg40='-Uuseshrplib'
++config_arg40='-Duseshrplib'
++config_arg41='-Dlibperl=libperl.so.5.32.1'
+
+ Author=''
+ Date=''
+@@ -100,7 +101,7 @@
+ cc='arc-linux-gnu-gcc'
+ cccdlflags='-fPIC'
+ ccdlflags='-Wl,-E'
+-ccflags='-D_REENTRANT -D_GNU_SOURCE -DDEBIAN -DAPPLLIB_EXP="/usr/lib/arc-linux-gnu/perl-base" -Wdate-time -D_FORTIFY_SOURCE=2 -g -O2 -ffile-prefix-map=/root/perl-5.32.1=. -fstack-protector-strong -Wformat -Werror=format-security -fwrapv -fno-strict-aliasing -pipe -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
++ccflags='-D_REENTRANT -D_GNU_SOURCE -DDEBIAN -Wdate-time -D_FORTIFY_SOURCE=2 -g -O2 -ffile-prefix-map=/root/perl-5.32.1=. -fstack-protector-strong -Wformat -Werror=format-security -fwrapv -fno-strict-aliasing -pipe -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
+ ccflags_uselargefiles='-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
+ ccname='gcc'
+ ccsymbols=''
+@@ -122,7 +123,7 @@
+ cpp='arc-linux-gnu-cpp'
+ cpp_stuff='42'
+ cppccsymbols=''
+-cppflags='-D_REENTRANT -D_GNU_SOURCE -DDEBIAN -DAPPLLIB_EXP="/usr/lib/arc-linux-gnu/perl-base" -Wdate-time -D_FORTIFY_SOURCE=2 -g -O2 -ffile-prefix-map=/root/perl-5.32.1=. -fstack-protector-strong -Wformat -Werror=format-security -fwrapv -fno-strict-aliasing -pipe -I/usr/local/include'
++cppflags='-D_REENTRANT -D_GNU_SOURCE -DDEBIAN -Wdate-time -D_FORTIFY_SOURCE=2 -g -O2 -ffile-prefix-map=/root/perl-5.32.1=. -fstack-protector-strong -Wformat -Werror=format-security -fwrapv -fno-strict-aliasing -pipe -I/usr/local/include'
+ cpplast='-'
+ cppminus='-'
+ cpprun='arc-linux-gnu-gcc  -E'
+@@ -925,7 +926,7 @@
+ less='less'
+ lib_ext='.a'
+ libc='libc-2.31.so'
+-libperl='libperl.a'
++libperl='libperl.so.5.32.1'
+ libpth='/usr/local/lib /usr/include/arc-linux-gnu /usr/lib /lib/arc-linux-gnu /lib /usr/lib/arc-linux-gnu'
+ libs='-lgdbm -lgdbm_compat -ldb -ldl -lm -lpthread -lc -lcrypt'
+ libsdirs=' /usr/lib/arc-linux-gnu'
+@@ -1208,7 +1209,7 @@
+ usequadmath='undef'
+ usereentrant='undef'
+ userelocatableinc='undef'
+-useshrplib='false'
++useshrplib='true'
+ usesitecustomize='undef'
+ usesocks='undef'
+ usethreads='define'
