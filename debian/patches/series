@@ -45,3 +45,4 @@ fixes/hurd-cachepropagate-test-fix.diff
 fixes/io_socket_ip_ipv6.diff
 fixes/encode-CVE-2021-36770.diff
 fixes/regcomp-memleak.diff
+fixes/CVE-2023-47038.diff
