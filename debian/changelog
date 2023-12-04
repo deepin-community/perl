@@ -2,7 +2,7 @@ perl (5.32.1-8) unstable; urgency=medium
 
  * [SECURITY] CVE-2023-47038: Write past buffer end via illegal
 
- -- DESKTOP-CR5471C <zeno@DESKTOP-CR5471C.localdomain>  Sun, 03 Dec 2023 00:25:29 +0800
+ -- LiChengGang <lichenggang@uniontech.com>  Sun, 03 Dec 2023 00:25:29 +0800
 
 perl (5.32.1-7) unstable; urgency=medium
 
