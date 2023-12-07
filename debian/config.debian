@@ -119,6 +119,8 @@ then
     -Ui_libutil					\
     -Ui_xlocale					\
     -Uversiononly \
+    -Ud_strlcpy					\
+    -Ud_strlcat					\
     -DDEBUGGING=$debugging			\
     -Doptimize=\"$optimize\"			\
     $extra_path					\
