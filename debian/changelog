@@ -1,25 +1,74 @@
-perl (5.36.0-10) unstable; urgency=medium
+perl (5.38.2-3) unstable; urgency=medium
 
-  * [SECURITY] CVE-2023-47039: Write past buffer end via illegal
-    user-defined Unicode property. (Closes: #1056746)
+  * Unbreak locale initialization when embedding perl. (Closes: #1060456)
 
- -- Niko Tyni <ntyni@debian.org>  Sat, 25 Nov 2023 22:54:24 +0200
+ -- Niko Tyni <ntyni@debian.org>  Fri, 12 Jan 2024 18:16:08 +0200
 
-perl (5.36.0-9) unstable; urgency=medium
+perl (5.38.2-2) unstable; urgency=medium
 
+  * Update copyright file for the superfast hash algorithm removal.
+    Thanks to Milton Moura. (Closes: #1054457)
+  * Add 5.38.2 to debian/released-versions.
+  * Upload to unstable.
+
+ -- Niko Tyni <ntyni@debian.org>  Tue, 09 Jan 2024 22:05:06 +0200
+
+perl (5.38.2-1) experimental; urgency=medium
+
+  * Update to new upstream version 5.38.2.
+    + [SECURITY] CVE-2023-47038: Write past buffer end via illegal
+      user-defined Unicode property. (Closes: #1056746)
+  * Restore optimization level of op.c and opmini.c on hppa and sh4.
+    Many thanks to John David Anglin. (Closes: #1055109)
   * Build depend on libc6-dev (>= 2.37-8) on ppc64el for correct F_GETLK
     et al. (See  #1050592)
   * Explicitly do not use strlcpy and strlcat from glibc 2.38 to keep
-    libperl5.36 symbols stable. (Closes: #1051427)
+    libperl5.38 symbols stable. (Closes: #1051427)
 
- -- Niko Tyni <ntyni@debian.org>  Sat, 09 Sep 2023 19:19:46 +0300
+ -- Niko Tyni <ntyni@debian.org>  Thu, 30 Nov 2023 20:28:47 +0200
 
-perl (5.36.0-8) unstable; urgency=medium
+perl (5.38.0-2) experimental; urgency=medium
 
-  * Unbreak builds with the nodoc build profile.  (See: #50091)
-  * Add cross build support files for hurd-amd64. (Closes: #1043394)
+  * Unbreak builds with the nodoc build profile. (See: #50091)
+  * Add cross build support files for hurd-amd64 (Closes: #1043394)
+  * Break older versions of libgnupg-interface-perl due to #1042985.
+    (Closes: #1043230)
+  * Break older versions of liblexical-failure-perl due to #1042852.
+    (Closes: #1042864)
+  * Backport upstream fix for a bug in Math::BigFloat subclass numeric
+    comparison that broke LedgerSMB. (See: #1043234)
 
- -- Niko Tyni <ntyni@debian.org>  Fri, 18 Aug 2023 18:41:33 +0300
+ -- Niko Tyni <ntyni@debian.org>  Fri, 18 Aug 2023 22:58:34 +0300
+
+perl (5.38.0-1) experimental; urgency=medium
+
+  * Update to new upstream version 5.38.0.
+  * Break libnumber-format-perl (<< 1.76). (See #1040376)
+
+ -- Niko Tyni <ntyni@debian.org>  Wed, 05 Jul 2023 10:58:57 +0300
+
+perl (5.38.0~rc2-1) experimental; urgency=medium
+
+  * Update to new upstream release candidate 5.38.0-RC2.
+    + [SECURITY] CVE-2023-31484: CPAN.pm now verifies TLS certificates.
+                                 (Closes: #1035109)
+    + [SECURITY] CVE-2023-31486: HTTP-Tiny now verifies TLS certificates
+                                 by default.  (Closes: #954089)
+    + no longer panics on s///gre with tainted utf8 strings.
+      (Closes: #1006280)
+    + fixes a syntax error in Math::Complex documentation.
+      (Closes: #944883)
+    + improves perlretut formatting.(Closes: #1033649)
+    + POD with italics inside C<> now gets correctly formatted.
+      (Closes: #1021955)
+    + zero-width space in POD is now converted correctly.
+      (Closes: #941980)
+    + converted POD no longer causes point size warnings from troff
+      specific heuristics. (Closes: #871225)
+    + Pod::Text now does output encoding correctly. (Closes: #1020574)
+  * Add build dependency on libcrypt-dev. (Closes: #1029753)
+
+ -- Niko Tyni <ntyni@debian.org>  Sun, 02 Jul 2023 13:12:07 +0300
 
 perl (5.36.0-7) unstable; urgency=medium
 

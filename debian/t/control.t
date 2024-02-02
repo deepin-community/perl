@@ -38,6 +38,7 @@ my %known_digits = (
     "libtime-piece-perl" => 4,
     "libjson-pp-perl"    => 5,
     "libextutils-parsexs-perl" => 6,
+    "libmath-complex-perl" => 4,
 );
 
 # list special cases of version numbers that are OK here
@@ -60,6 +61,9 @@ my %ok = (
        "libautodie-perl" => {
                 "2.26"   => "2.29",
        },
+       "libio-socket-ip-perl" => {
+                "0.41_01"   => "0.41",
+       },
 );
 
 # epochs in the archive (including past ones)
@@ -73,7 +77,7 @@ my %known_epochs = (
 # Replaces+Provides
 my %triplet_check_skip = (
 	"perl-base" => [ "libfile-spec-perl" ],
-	"libperl5.36" => [ "libfilter-perl" ],
+	"libperl5.38" => [ "libfilter-perl" ],
 );
 
 # list special cases where the name of the Debian package does not
