@@ -1,0 +1,83 @@
+From: Niko Tyni <ntyni@debian.org>
+Date: Thu, 10 Aug 2023 14:49:54 +0100
+Subject: Fix Math::BigFloat subclass numeric comparison
+
+This fixes commit 46d1252c98f565ae787c840173e5f98acf8953f1
+
+Closes: https://github.com/pjacklam/p5-Math-BigInt/issues/8
+
+(Backported to Debian perl core 5.38.0 package by Niko Tyni,
+ including a MANIFEST update.)
+
+Bug-Debian: https://bugs.debian.org/1043234
+Origin: backport, https://github.com/pjacklam/p5-Math-BigInt/commit/8039b1f2733f4b8adb9d21d97c06d6dae3eda147
+---
+ MANIFEST                                         |  1 +
+ cpan/Math-BigInt/lib/Math/BigFloat.pm            |  2 +-
+ cpan/Math-BigInt/t/Math/BigFloat/BareSubclass.pm |  3 +++
+ cpan/Math-BigInt/t/isa.t                         | 10 +++++++++-
+ 4 files changed, 14 insertions(+), 2 deletions(-)
+ create mode 100644 cpan/Math-BigInt/t/Math/BigFloat/BareSubclass.pm
+
+diff --git a/MANIFEST b/MANIFEST
+index 88d3080..f765481 100644
+--- a/MANIFEST
++++ b/MANIFEST
+@@ -1598,6 +1598,7 @@ cpan/Math-BigInt/t/config.t			Test Math::BigInt->config()
+ cpan/Math-BigInt/t/downgrade.t			Test if use Math::BigInt(); under downgrade works
+ cpan/Math-BigInt/t/inf_nan.t			Special tests for inf and *NaN* handling
+ cpan/Math-BigInt/t/isa.t			Test for Math::BigInt inheritance
++cpan/Math-BigInt/t/Math/BigFloat/BareSubclass.pm	Empty subclass of BigFloat for test
+ cpan/Math-BigInt/t/Math/BigFloat/Subclass.pm	Empty subclass of BigFloat for test
+ cpan/Math-BigInt/t/Math/BigInt/BareCalc.pm	Bigint's simulation of Calc
+ cpan/Math-BigInt/t/Math/BigInt/Lib/Minimal.pm
+diff --git a/cpan/Math-BigInt/lib/Math/BigFloat.pm b/cpan/Math-BigInt/lib/Math/BigFloat.pm
+index ae60e80..68bac2e 100644
+--- a/cpan/Math-BigInt/lib/Math/BigFloat.pm
++++ b/cpan/Math-BigInt/lib/Math/BigFloat.pm
+@@ -396,7 +396,7 @@ sub new {
+ 
+     # Math::BigFloat or subclass
+ 
+-    if (defined(blessed($wanted)) && $wanted -> isa($class)) {
++    if (defined(blessed($wanted)) && $wanted -> isa('Math::BigFloat')) {
+ 
+         # Don't copy the accuracy and precision, because a new object should get
+         # them from the global configuration.
+diff --git a/cpan/Math-BigInt/t/Math/BigFloat/BareSubclass.pm b/cpan/Math-BigInt/t/Math/BigFloat/BareSubclass.pm
+new file mode 100644
+index 0000000..5906a44
+--- /dev/null
++++ b/cpan/Math-BigInt/t/Math/BigFloat/BareSubclass.pm
+@@ -0,0 +1,3 @@
++package Math::BigFloat::BareSubclass;
++use base 'Math::BigFloat';
++1;
+diff --git a/cpan/Math-BigInt/t/isa.t b/cpan/Math-BigInt/t/isa.t
+index 366c12d..21eba1e 100644
+--- a/cpan/Math-BigInt/t/isa.t
++++ b/cpan/Math-BigInt/t/isa.t
+@@ -4,10 +4,11 @@ use strict;
+ use warnings;
+ use lib 't';
+ 
+-use Test::More tests => 11;
++use Test::More tests => 13;
+ 
+ use Math::BigInt::Subclass;
+ use Math::BigFloat::Subclass;
++use Math::BigFloat::BareSubclass;
+ use Math::BigInt;
+ use Math::BigFloat;
+ 
+@@ -49,3 +50,10 @@ ok(!Math::BigFloat->new(123)->isa('Math::BigInt'),
+     is(ref($x), 'Math::BigFloat', 'ref($x) = "Math::BigFloat"');
+     isa_ok($x, 'Math::BigFloat');
+ }
++
++{
++    my $x = Math::BigFloat->new(9999.99);
++    my $y = Math::BigFloat::BareSubclass->new(9999.99);
++    ok($x == $y, "Math::BigFloat parent == subclass");
++    ok($y == $x, "Math::BigFloat subclass == parent");
++}

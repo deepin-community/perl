@@ -19,10 +19,10 @@ Bug-Debian: https://bugs.debian.org/902779
  2 files changed, 6 insertions(+)
 
 diff --git a/dump.c b/dump.c
-index 6887ec3..0ea3324 100644
+index a082848..a764a16 100644
 --- a/dump.c
 +++ b/dump.c
-@@ -2641,6 +2641,8 @@ Perl_runops_debug(pTHX)
+@@ -2825,6 +2825,8 @@ Perl_runops_debug(pTHX)
          ++PL_op_exec_cnt[PL_op->op_type];
  #endif
  #if defined DEBUGGING && !defined DEBUGGING_RE_ONLY
@@ -31,7 +31,7 @@ index 6887ec3..0ea3324 100644
          if (PL_curstackinfo->si_stack_hwm < PL_stack_sp - PL_stack_base)
              Perl_croak_nocontext(
                  "panic: previous op failed to extend arg stack: "
-@@ -2648,6 +2650,7 @@ Perl_runops_debug(pTHX)
+@@ -2832,6 +2834,7 @@ Perl_runops_debug(pTHX)
                      PL_stack_base, PL_stack_sp,
                      PL_stack_base + PL_curstackinfo->si_stack_hwm);
          PL_curstackinfo->si_stack_hwm = PL_stack_sp - PL_stack_base;
@@ -40,10 +40,10 @@ index 6887ec3..0ea3324 100644
          if (PL_debug) {
              ENTER;
 diff --git a/pp_hot.c b/pp_hot.c
-index d3a0aa1..baf627c 100644
+index 3ec24a0..bc71d4d 100644
 --- a/pp_hot.c
 +++ b/pp_hot.c
-@@ -5352,6 +5352,8 @@ PP(pp_entersub)
+@@ -5555,6 +5555,8 @@ PP(pp_entersub)
          CvXSUB(cv)(aTHX_ cv);
  
  #if defined DEBUGGING && !defined DEBUGGING_RE_ONLY
@@ -52,7 +52,7 @@ index d3a0aa1..baf627c 100644
          /* This duplicates the check done in runops_debug(), but provides more
           * information in the common case of the fault being with an XSUB.
           *
-@@ -5365,6 +5367,7 @@ PP(pp_entersub)
+@@ -5568,6 +5570,7 @@ PP(pp_entersub)
                      HvNAME(GvSTASH(CvGV(cv))), GvNAME(CvGV(cv)), CvFILE(cv),
                      PL_stack_base, PL_stack_sp,
                      PL_stack_base + PL_curstackinfo->si_stack_hwm);

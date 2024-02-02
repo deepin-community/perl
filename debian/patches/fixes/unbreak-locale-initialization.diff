@@ -1,0 +1,31 @@
+From: Niko Tyni <ntyni@debian.org>
+Date: Fri, 12 Jan 2024 16:11:08 +0000
+Subject: Revert "locale.c: Do uselocale() earlier in init process"
+
+This unbreaks locale initialization when embedding perl until upstream
+has a proper fix.
+
+This reverts Perl upstream commit 7af2d2037375d58e700f9e1b217efb2c4db66133.
+
+Bug-Debian: https://bugs.debian.org/1060679
+Bug: https://github.com/Perl/perl5/issues/21366
+---
+ locale.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/locale.c b/locale.c
+index 86f6b28..57e6d32 100644
+--- a/locale.c
++++ b/locale.c
+@@ -5283,11 +5283,6 @@ Perl_init_i18nl10n(pTHX_ int printwarn)
+     DEBUG_Lv(PerlIO_printf(Perl_debug_log, "created C object %p\n",
+                            PL_C_locale_obj));
+ 
+-    /* Switch to using the POSIX 2008 interface now.  This would happen below
+-     * anyway, but deferring it can lead to leaks of memory that would also get
+-     * malloc'd in the interim */
+-    uselocale(PL_C_locale_obj);
+-
+ #    ifdef USE_LOCALE_NUMERIC
+ 
+     PL_underlying_numeric_obj = duplocale(PL_C_locale_obj);

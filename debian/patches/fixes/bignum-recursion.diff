@@ -1,0 +1,175 @@
+From: Peter John Acklam <pjacklam@gmail.com>
+Date: Fri, 31 Mar 2023 15:09:35 +0200
+Subject: Fix CPAN RT #146411
+
+- Avoid infinite recursion in bitwise operations. This happened when
+  arguments were upgraded and downgraded and upgraded again ad
+  infinitum.
+
+- Add tests to verify the fix.
+
+[Backported to Perl 5.38.0-RC2 in Debian by Niko Tyni]
+
+Origin: backport, https://github.com/pjacklam/p5-Math-BigInt/commit/5020d66cc0ece2a5fbf5cb182ab7ab62c8adade5
+Bug: https://rt.cpan.org/Public/Bug/Display.html?id=146411
+Bug-Debian: https://bugs.debian.org/1012704
+---
+ cpan/Math-BigInt/lib/Math/BigFloat.pm | 70 +++++++++++++++++++----------------
+ cpan/Math-BigInt/t/upgrade.inc        |  6 +++
+ cpan/Math-BigInt/t/upgrade.t          |  2 +-
+ 3 files changed, 45 insertions(+), 33 deletions(-)
+
+diff --git a/cpan/Math-BigInt/lib/Math/BigFloat.pm b/cpan/Math-BigInt/lib/Math/BigFloat.pm
+index 66300a4..ae60e80 100644
+--- a/cpan/Math-BigInt/lib/Math/BigFloat.pm
++++ b/cpan/Math-BigInt/lib/Math/BigFloat.pm
+@@ -3856,16 +3856,18 @@ sub band {
+ 
+     return $x -> bnan(@r) if $x -> is_nan() || $y -> is_nan();
+ 
+-    my $xtmp = Math::BigInt -> new($x -> bint());   # to Math::BigInt
+-    $xtmp = $xtmp -> band($y);
++    my $xint = $x -> as_int();          # to Math::BigInt
++    my $yint = $y -> as_int();          # to Math::BigInt
+ 
+-    return $xtmp -> round(@r) if defined $downgrade;
++    $xint = $xint -> band($yint);
+ 
+-    $xtmp = $class -> new($xtmp);                   # back to Math::BigFloat
+-    $x -> {sign} = $xtmp -> {sign};
+-    $x -> {_m}   = $xtmp -> {_m};
+-    $x -> {_es}  = $xtmp -> {_es};
+-    $x -> {_e}   = $xtmp -> {_e};
++    return $xint -> round(@r) if defined $downgrade;
++
++    my $xflt = $class -> new($xint);    # back to Math::BigFloat
++    $x -> {sign} = $xflt -> {sign};
++    $x -> {_m}   = $xflt -> {_m};
++    $x -> {_es}  = $xflt -> {_es};
++    $x -> {_e}   = $xflt -> {_e};
+ 
+     return $x -> round(@r);
+ }
+@@ -3879,16 +3881,18 @@ sub bior {
+ 
+     return $x -> bnan(@r) if $x -> is_nan() || $y -> is_nan();
+ 
+-    my $xtmp = Math::BigInt -> new($x -> bint());   # to Math::BigInt
+-    $xtmp = $xtmp -> bior($y);
++    my $xint = $x -> as_int();          # to Math::BigInt
++    my $yint = $y -> as_int();          # to Math::BigInt
++
++    $xint = $xint -> bior($yint);
+ 
+-    return $xtmp -> round(@r) if defined $downgrade;
++    return $xint -> round(@r) if defined $downgrade;
+ 
+-    $xtmp = $class -> new($xtmp);                   # back to Math::BigFloat
+-    $x -> {sign} = $xtmp -> {sign};
+-    $x -> {_m}   = $xtmp -> {_m};
+-    $x -> {_es}  = $xtmp -> {_es};
+-    $x -> {_e}   = $xtmp -> {_e};
++    my $xflt = $class -> new($xint);    # back to Math::BigFloat
++    $x -> {sign} = $xflt -> {sign};
++    $x -> {_m}   = $xflt -> {_m};
++    $x -> {_es}  = $xflt -> {_es};
++    $x -> {_e}   = $xflt -> {_e};
+ 
+     return $x -> round(@r);
+ }
+@@ -3902,16 +3906,18 @@ sub bxor {
+ 
+     return $x -> bnan(@r) if $x -> is_nan() || $y -> is_nan();
+ 
+-    my $xtmp = Math::BigInt -> new($x -> bint());   # to Math::BigInt
+-    $xtmp = $xtmp -> bxor($y);
++    my $xint = $x -> as_int();          # to Math::BigInt
++    my $yint = $y -> as_int();          # to Math::BigInt
++
++    $xint = $xint -> bxor($yint);
+ 
+-    return $xtmp -> round(@r) if defined $downgrade;
++    return $xint -> round(@r) if defined $downgrade;
+ 
+-    $xtmp = $class -> new($xtmp);                   # back to Math::BigFloat
+-    $x -> {sign} = $xtmp -> {sign};
+-    $x -> {_m}   = $xtmp -> {_m};
+-    $x -> {_es}  = $xtmp -> {_es};
+-    $x -> {_e}   = $xtmp -> {_e};
++    my $xflt = $class -> new($xint);    # back to Math::BigFloat
++    $x -> {sign} = $xflt -> {sign};
++    $x -> {_m}   = $xflt -> {_m};
++    $x -> {_es}  = $xflt -> {_es};
++    $x -> {_e}   = $xflt -> {_e};
+ 
+     return $x -> round(@r);
+ }
+@@ -3923,16 +3929,16 @@ sub bnot {
+ 
+     return $x -> bnan(@r) if $x -> is_nan();
+ 
+-    my $xtmp = Math::BigInt -> new($x -> bint());   # to Math::BigInt
+-    $xtmp = $xtmp -> bnot();
++    my $xint = $x -> as_int();          # to Math::BigInt
++    $xint = $xint -> bnot();
+ 
+-    return $xtmp -> round(@r) if defined $downgrade;
++    return $xint -> round(@r) if defined $downgrade;
+ 
+-    $xtmp = $class -> new($xtmp);                   # back to Math::BigFloat
+-    $x -> {sign} = $xtmp -> {sign};
+-    $x -> {_m}   = $xtmp -> {_m};
+-    $x -> {_es}  = $xtmp -> {_es};
+-    $x -> {_e}   = $xtmp -> {_e};
++    my $xflt = $class -> new($xint);    # back to Math::BigFloat
++    $x -> {sign} = $xflt -> {sign};
++    $x -> {_m}   = $xflt -> {_m};
++    $x -> {_es}  = $xflt -> {_es};
++    $x -> {_e}   = $xflt -> {_e};
+ 
+     return $x -> round(@r);
+ }
+diff --git a/cpan/Math-BigInt/t/upgrade.inc b/cpan/Math-BigInt/t/upgrade.inc
+index d8bd119..dcd2ad6 100644
+--- a/cpan/Math-BigInt/t/upgrade.inc
++++ b/cpan/Math-BigInt/t/upgrade.inc
+@@ -1108,6 +1108,8 @@ abc:0:NaN
+ -7:-4:-8
+ -7:4:0
+ -4:7:4
++1:0.5:0
++
+ # equal arguments are treated special, so also do some test with unequal ones
+ 0xFFFF:0xFFFF:0x0xFFFF
+ 0xFFFFFF:0xFFFFFF:0x0xFFFFFF
+@@ -1140,6 +1142,8 @@ abc:0:NaN
+ -6:-6:-6
+ -7:4:-3
+ -4:7:-1
++1:0.5:1
++
+ # equal arguments are treated special, so also do some test with unequal ones
+ 0xFFFF:0xFFFF:0x0xFFFF
+ 0xFFFFFF:0xFFFFFF:0x0xFFFFFF
+@@ -1189,6 +1193,8 @@ abc:0:NaN
+ -4:7:-5
+ 4:-7:-3
+ -4:-7:5
++1:0.5:1
++
+ # equal arguments are treated special, so also do some test with unequal ones
+ 0xFFFF:0xFFFF:0
+ 0xFFFFFF:0xFFFFFF:0
+diff --git a/cpan/Math-BigInt/t/upgrade.t b/cpan/Math-BigInt/t/upgrade.t
+index 132c9c5..43e562f 100644
+--- a/cpan/Math-BigInt/t/upgrade.t
++++ b/cpan/Math-BigInt/t/upgrade.t
+@@ -3,7 +3,7 @@
+ use strict;
+ use warnings;
+ 
+-use Test::More tests => 2134            # tests in require'd file
++use Test::More tests => 2140            # tests in require'd file
+                          + 6;           # tests in this file
+ 
+ use Math::BigInt;

@@ -13,10 +13,10 @@ compatible, but built on a different machine.
  1 file changed, 16 deletions(-)
 
 diff --git a/ext/Errno/Errno_pm.PL b/ext/Errno/Errno_pm.PL
-index ee2f4a3..2c52aa5 100644
+index ae647d5..508c3c6 100644
 --- a/ext/Errno/Errno_pm.PL
 +++ b/ext/Errno/Errno_pm.PL
-@@ -283,22 +283,6 @@ package Errno;
+@@ -288,22 +288,6 @@ package Errno;
  use Exporter 'import';
  use strict;
  
