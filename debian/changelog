@@ -1,3 +1,11 @@
+perl (5.36.0-10deepin1) unstable; urgency=medium
+
+  * Mitigate CVE-2024-56406: A heap buffer overflow vulnerability was
+    discovered in Perl.
+    https://github.com/deepin-community/sig-deepin-security/issues/69
+
+ -- Tianyu Chen <sweetyfish@deepin.org>  Mon, 14 Apr 2025 17:23:53 +0800
+
 perl (5.36.0-10) unstable; urgency=medium
 
   * [SECURITY] CVE-2023-47039: Write past buffer end via illegal
