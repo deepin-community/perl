@@ -52,3 +52,8 @@ fixes/readline-stream-errors-test.diff
 fixes/lto-test-fix.diff
 fixes/CVE-2023-47038.diff
 fixes/CVE-2024-56406.diff
+fixes/CVE-2025-40909-metaconfig.diff
+fixes/CVE-2025-40909-1.diff
+fixes/CVE-2025-40909-2.diff
+fixes/CVE-2025-40909-3.diff
+fixes/CVE-2025-40909-metaconfig-reorder.diff

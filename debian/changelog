@@ -1,3 +1,10 @@
+perl (5.36.0-10deepin2) UNRELEASED; urgency=medium
+
+  * Mitigate CVE-2025-40909: Clone dirhandles without fchdir.
+    Thanks to Niko Tyni.
+
+ -- Tianyu Chen <sweetyfish@deepin.org>  Tue, 29 Jul 2025 14:19:07 +0800
+
 perl (5.36.0-10deepin1) unstable; urgency=medium
 
   * Mitigate CVE-2024-56406: A heap buffer overflow vulnerability was
