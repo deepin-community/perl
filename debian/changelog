@@ -1,9 +1,10 @@
-perl (5.36.0-10deepin2) UNRELEASED; urgency=medium
+perl (5.36.0-10deepin2) unstable; urgency=medium
 
   * Mitigate CVE-2025-40909: Clone dirhandles without fchdir.
     Thanks to Niko Tyni.
+  * Update uconfig (microperl).
 
- -- Tianyu Chen <sweetyfish@deepin.org>  Tue, 29 Jul 2025 14:19:07 +0800
+ -- Tianyu Chen <sweetyfish@deepin.org>  Mon, 04 Aug 2025 17:21:01 +0800
 
 perl (5.36.0-10deepin1) unstable; urgency=medium
 
