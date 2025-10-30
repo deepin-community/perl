@@ -14,7 +14,7 @@ Bug-Debian: http://bugs.debian.org/290336
  2 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/cpan/Encode/bin/enc2xs b/cpan/Encode/bin/enc2xs
-index c1c9796..be3d1d6 100644
+index 502ae39..f778466 100644
 --- a/cpan/Encode/bin/enc2xs
 +++ b/cpan/Encode/bin/enc2xs
 @@ -1002,11 +1002,11 @@ use vars qw(

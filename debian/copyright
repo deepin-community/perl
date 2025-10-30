@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Files-Excluded-regen-configure: bin/*
 Upstream-Name: perl
-Source: http://www.perl.com/CPAN/src/5.0/
+Source: https://www.cpan.org/src/5.0/
 Comment:
  This package was initially debianized by Brendan O'Dea <bod@debian.org>
  on Thu, 17 Aug 2000 16:10:54 +1000. The packaging has since been modified
@@ -12,11 +12,11 @@ Comment:
  .
     Larry Wall et. al. (see /usr/share/doc/perl/AUTHORS).
  .
- Last checked against: Perl 5.38.2
+ Last checked against: Perl 5.40.1
 
 Files: *
 Copyright:
- Perl is Copyright (C) 1987-2023 by Larry Wall and others. All rights reserved.
+ Perl is Copyright (C) 1987-2025 by Larry Wall and others. All rights reserved.
 License: GPL-1+ or Artistic
 Comment:
     This program is free software; you can redistribute it and/or modify
@@ -341,7 +341,7 @@ Comment:
  same terms as Perl itself.
 
 Files: cpan/Compress-Raw-Bzip2/*
-Copyright: Copyright (c) 2005-2023 Paul Marquess. All rights reserved.
+Copyright: Copyright (c) 2005-2024 Paul Marquess. All rights reserved.
 License: GPL-1+ or Artistic
 Comment:
  This program is free software; you can redistribute it
@@ -361,7 +361,7 @@ Comment:
 License: BZIP
 
 Files: cpan/Compress-Raw-Zlib/*
-Copyright: Copyright (c) 2005-2023 Paul Marquess. All rights reserved.
+Copyright: Copyright (c) 2005-2024 Paul Marquess. All rights reserved.
 License: GPL-1+ or Artistic
 Comment:
  This program is free software; you can redistribute it
@@ -369,7 +369,7 @@ Comment:
 
 Files: cpan/Compress-Raw-Zlib/zlib-src/*
 Copyright:
- Copyright (C) 1995-2022 Jean-loup Gailly and Mark Adler
+ Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
 License: ZLIB
 
 Files: cpan/Config-Perl-V/*
@@ -433,7 +433,7 @@ Comment:
  the same terms as the Perl 5 programming language system itself.
 
 Files: cpan/DB_File/*
-Copyright: Copyright (c) 1995-2022 Paul Marquess. All rights reserved.
+Copyright: Copyright (c) 1995-2023 Paul Marquess. All rights reserved.
 License: GPL-1+ or Artistic
 Comment:
  This program is free software; you can redistribute it and/or modify
@@ -641,7 +641,7 @@ Comment:
 
 Files: cpan/IO-Compress/*
 Copyright:
- Copyright (c) 1995-2022 Paul Marquess. All rights reserved.
+ Copyright (c) 1995-2024 Paul Marquess. All rights reserved.
 License: GPL-1+ or Artistic
 Comment:
  This program is free software; you can redistribute it
@@ -649,7 +649,7 @@ Comment:
 
 Files: cpan/IO-Socket-IP/*
 Copyright:
- (C) Paul Evans, 2010-2020 -- leonerd@leonerd.org.uk
+ (C) Paul Evans, 2010-2023 -- leonerd@leonerd.org.uk
 License: GPL-1+ or Artistic
 Comment:
  You may distribute under the terms of either the GNU General Public License
@@ -1045,6 +1045,13 @@ Comment:
  This software is free software and can be modified and distributed under
  the same terms as Perl itself.
 
+Files: cpan/Term-Table/*
+Copyright: Copyright 2016, 2017 Chad Granum <exodist@cpan.org>
+License: GPL-1+ or Artistic
+Comment:
+ This software is free software and can be modified and distributed under
+ the same terms as Perl itself.
+
 Files: cpan/Test-Harness/*
 Copyright:
  Copyright (c) 2007-2011, Andy Armstrong <andy@hexten.net>. All rights reserved.
@@ -1073,7 +1080,7 @@ Comment:
 Files: cpan/Test-Simple/*
 Copyright:
  Copyright 2001-2008 by Michael G Schwern <schwern@pobox.com>.
- Copyright 2019-2020 Chad Granum <exodist@cpan.org>.
+ Copyright 2017,2019-2020 Chad Granum <exodist@cpan.org>.
 License: GPL-1+ or Artistic
 Comment:
  This program is free software; you can redistribute it and/or
@@ -1147,13 +1154,45 @@ Files:
  cpan/Test-Simple/lib/ok.pm
 Copyright: none
  To the extent possible under law, 唐鳳 has waived all copyright and related
- or neighboring rights to L<Test-use-ok>
+ or neighboring rights to Test::use::ok
 License:  CC0-1.0
 Comment:
  ----------------------------------------
- The file links to http://creativecommons.org/publicdomain/zero/1.0/
+ The file links to https://creativecommons.org/publicdomain/zero/1.0/
  and the full license text as retrieved from there can be found at the
  end of this file.
+
+Files: cpan/Test2-Suite/*
+Copyright: Copyright 2018,2023 Chad Granum <exodist@cpan.org>
+License: Artistic or GPL-1+
+Comment:
+ This program is free software; you can redistribute it and/or
+ modify it under the same terms as Perl itself.
+
+Files: cpan/Test2-Suite/lib/Test2/Compare/Bag.pm
+Copyright:
+ Copyright 2018 Chad Granum <exodist@cpan.org>
+ Copyright 2018 Gianni Ceccarelli <dakkar@thenautilus.net>
+License: Artistic or GPL-1+
+Comment:
+ This program is free software; you can redistribute it and/or
+ modify it under the same terms as Perl itself.
+
+Files: cpan/Test2-Suite/lib/Test2/Tools/Refcount.pm
+Copyright: (C) Paul Evans, 2008-2023 -- leonerd@leonerd.org.uk
+License: Artistic or GPL-1+
+Comment:
+ You may distribute under the terms of either the GNU General Public License
+ or the Artistic License (the same terms as Perl itself)
+
+Files: cpan/Test2-Suite/lib/Test2/Util/Guard.pm
+Copyright:
+ Copyright (c) 2005-2015, chocolateboy
+ Copyright 2023 Chad Granum <exodist7@gmail.com>
+License: Artistic or GPL-1+
+Comment:
+ This module is free software. It may be used, redistributed and/or modified under the same terms
+ as Perl itself.
 
 Files: cpan/Text-Balanced/*
 Copyright:
@@ -1196,7 +1235,6 @@ Files:
  cpan/ExtUtils-Install/*
  cpan/Math-BigInt/*
  cpan/Math-BigInt-FastCalc/*
- cpan/Math-BigRat/*
  dist/Thread-Queue/*
 Copyright: unknown
 License: GPL-1+ or Artistic
@@ -1218,7 +1256,7 @@ Comment:
 
 Files: cpan/Time-Local/*
 Copyright:
- Copyright (c) 1997 - 2020 by Graham Barr & Dave Rolsky.
+ Copyright (c) 1997 - 2023 by Graham Barr & Dave Rolsky.
 License: GPL-1+ or Artistic
 Comment:
  This is free software; you can redistribute it and/or modify it under

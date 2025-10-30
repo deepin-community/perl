@@ -30,6 +30,7 @@ case "$1" in
     --debug) # debugperl
     	build_type=debug
 	debugging=both # add -DDEBUGGING
+	ccflags="$ccflags -DPERL_NO_HWM" # Debian bug 902779
 	opts="-Uuseshrplib";;
 
     --shared) # shared library

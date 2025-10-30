@@ -31,7 +31,6 @@ debian/perldoc-pager.diff
 debian/prune_libs.diff
 debian/mod_paths.diff
 debian/deprecate-with-apt.diff
-debian/disable-stack-check.diff
 debian/perlbug-editor.diff
 debian/eu-mm-perl-base.diff
 fixes/io_socket_ip_ipv6.diff
@@ -39,6 +38,11 @@ debian/usrmerge-lib64.diff
 debian/usrmerge-realpath.diff
 fixes/x32-io-msg-skip.diff
 debian/configure-regen.diff
-fixes/bignum-recursion.diff
-fixes/math-bigfloat-subclass.diff
-fixes/unbreak-locale-initialization.diff
+fixes/json-pp-options.diff
+fixes/test-harness-bailout.diff
+fixes/CVE-2024-56406.diff
+fixes/CVE-2025-40909-metaconfig.diff
+fixes/CVE-2025-40909-1.diff
+fixes/CVE-2025-40909-2.diff
+fixes/CVE-2025-40909-3.diff
+fixes/CVE-2025-40909-metaconfig-reorder.diff
