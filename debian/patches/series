@@ -58,3 +58,11 @@ fixes/CVE-2025-40909-2.diff
 fixes/CVE-2025-40909-3.diff
 fixes/CVE-2025-40909-metaconfig-reorder.diff
 fixes/CVE-2025-40909-microperl.diff
+0061-Add-verify_SSL-1-to-HTTP-Tiny-to-verify-https-server.patch
+0062-Change-verify_SSL-default-to-1-add-ENV-var-to-enable.patch
+0063-Cpan-entry-size-during-read.patch
+0064-Fix-typo-in-fastForward-72.patch
+0065-remove-use-of-eval-in-globmapper.-73.patch
+0066-perl-perl-security-147-test-cases.patch
+0067-perl-perl-security-147-test-against-the-actual-chara.patch
+0068-Validate-symlink-and-hardlink-linkname-in-SECURE-MOD.patch

@@ -1,3 +1,23 @@
+perl (5.36.0-10deepin3) unstable; urgency=medium
+
+  * d/p/0061-Add-verify_SSL-1-to-HTTP-Tiny-to-verify-https-server.patch
+    Fixes CVE-2023-31484
+  * d/p/0062-Change-verify_SSL-default-to-1-add-ENV-var-to-enable.patch
+    Fixes CVE-2023-31486
+  * d/p/0063-Cpan-entry-size-during-read.patch
+    Fixes CVE-2026-9538
+  * d/p/0064-Fix-typo-in-fastForward-72.patch
+    Fixes CVE-2026-48959
+  * d/p/0065-remove-use-of-eval-in-globmapper.-73.patch
+    Fixes CVE-2026-48962
+  * d/p/0066-perl-perl-security-147-test-cases.patch
+  * d/p/0067-perl-perl-security-147-test-against-the-actual-chara.patch
+    Fixes CVE-2026-8376
+  * d/p/0068-Validate-symlink-and-hardlink-linkname-in-SECURE-MOD.patch
+    Fixes CVE-2026-42496, CVE-2026-42497
+
+ -- Tianyu Chen <sweetyfish@deepin.org>  Thu, 28 May 2026 16:28:45 +0800
+
 perl (5.36.0-10deepin2) unstable; urgency=medium
 
   * Mitigate CVE-2025-40909: Clone dirhandles without fchdir.

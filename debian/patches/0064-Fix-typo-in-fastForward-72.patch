@@ -1,0 +1,23 @@
+From: pmqs <pmqs@cpan.org>
+Date: Fri, 15 May 2026 23:18:39 +0100
+Subject: Fix typo in fastForward #72
+
+---
+ cpan/IO-Compress/lib/IO/Uncompress/Unzip.pm | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/cpan/IO-Compress/lib/IO/Uncompress/Unzip.pm b/cpan/IO-Compress/lib/IO/Uncompress/Unzip.pm
+index cfe56d3..1c1b93c 100644
+--- a/cpan/IO-Compress/lib/IO/Uncompress/Unzip.pm
++++ b/cpan/IO-Compress/lib/IO/Uncompress/Unzip.pm
+@@ -157,8 +157,8 @@ sub fastForward
+ 
+     while ($offset > 0)
+     {
+-        $c = length $offset
+-            if length $offset < $c ;
++        $c = $offset
++            if $offset < $c ;
+ 
+         $offset -= $c;
+ 
