@@ -1,0 +1,71 @@
+From: Stig Palmquist <stig@stig.io>
+Date: Mon, 25 May 2026 19:11:34 +0100
+Subject: Cpan entry size during read
+
+Cap entry size during read to defend against attacker-controlled
+size-field memory DoS
+
+The tar header's 12-byte size field is attacker-controlled. Archive::Tar's
+non-skip extract path at Tar.pm:501 allocates a Perl scalar of the declared
+size before returning the read-short error, allowing a few-KB compressed
+archive declaring a 100 GB inner entry to trigger immediate multi-GB
+allocation. The existing $EXTRACT_BLOCK_SIZE is an output-side syswrite
+chunk size, not an input cap.
+
+Add $MAX_FILE_SIZE (default 1 GiB) checked once per entry, gating both the
+chunked-skip and full-slurp branches. Set to 0 to disable the cap.
+
+Signed-off-by: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+---
+ cpan/Archive-Tar/lib/Archive/Tar.pm | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/cpan/Archive-Tar/lib/Archive/Tar.pm b/cpan/Archive-Tar/lib/Archive/Tar.pm
+index 476e646..192cc5a 100644
+--- a/cpan/Archive-Tar/lib/Archive/Tar.pm
++++ b/cpan/Archive-Tar/lib/Archive/Tar.pm
+@@ -24,6 +24,7 @@ use strict;
+ use vars qw[$DEBUG $error $VERSION $WARN $FOLLOW_SYMLINK $CHOWN $CHMOD
+             $DO_NOT_USE_PREFIX $HAS_PERLIO $HAS_IO_STRING $SAME_PERMISSIONS
+             $INSECURE_EXTRACT_MODE $ZERO_PAD_NUMBERS @ISA @EXPORT $RESOLVE_SYMLINK
++            $MAX_FILE_SIZE
+          ];
+ 
+ @ISA                    = qw[Exporter];
+@@ -39,6 +40,7 @@ $DO_NOT_USE_PREFIX      = 0;
+ $INSECURE_EXTRACT_MODE  = 0;
+ $ZERO_PAD_NUMBERS       = 0;
+ $RESOLVE_SYMLINK        = $ENV{'PERL5_AT_RESOLVE_SYMLINK'} || 'speed';
++$MAX_FILE_SIZE          = 1024 * 1024 * 1024;
+ 
+ BEGIN {
+     use Config;
+@@ -442,6 +444,14 @@ sub _read_tar {
+ 
+             my $block = BLOCK_SIZE->( $entry->size );
+ 
++            if ( $MAX_FILE_SIZE && $entry->size > $MAX_FILE_SIZE ) {
++                $self->_error( qq[Entry '] . $entry->full_path .
++                    qq[' declared size ] . $entry->size .
++                    qq[ bytes exceeds \$Archive::Tar::MAX_FILE_SIZE ] .
++                    qq[($MAX_FILE_SIZE); refusing to allocate] );
++                next LOOP;
++            }
++
+             $data = $entry->get_content_by_ref;
+ 
+ 	    my $skip = 0;
+@@ -2163,6 +2173,13 @@ numbers. Added for compatibility with C<busybox> implementations.
+ 
+ 		It won't work for terminal, pipe or sockets or every non seekable source.
+ 
++=head2 $Archive::Tar::MAX_FILE_SIZE
++
++This variable holds an upper bound on the per-entry declared size that
++C<Archive::Tar> will accept when reading an archive. Entries whose header
++claims a larger size are refused with an error before any read allocation.
++Defaults to 1 GiB. Set to 0 to disable the cap.
++
+ =cut
+ 
+ =head1 FAQ
