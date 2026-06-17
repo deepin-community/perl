@@ -67,3 +67,4 @@ fixes/CVE-2025-40909-microperl.diff
 0067-perl-perl-security-147-test-against-the-actual-chara.patch
 0068-Validate-symlink-and-hardlink-linkname-in-SECURE-MOD.patch
 0069-Fix-CVE-2025-15649-uncaught-exception-in-dosToUnixTime.patch
+0070-Fix-CVE-2026-7010-CRLF-injection-in-HTTP-Tiny.patch

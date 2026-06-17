@@ -3,6 +3,8 @@ perl (5.36.0-10deepin4) unstable; urgency=medium
   * d/p/0069-Fix-CVE-2025-15649-uncaught-exception-in-dosToUnixTime.patch
     Fixes CVE-2025-15649: Uncaught exception in IO::Uncompress::Unzip
     _dosToUnixTime with malformed DOS date.
+  * d/p/0070-Fix-CVE-2026-7010-CRLF-injection-in-HTTP-Tiny.patch
+    Fixes CVE-2026-7010: CRLF injection in HTTP::Tiny.
 
  -- hudeng <hudeng@deepin.org>  Thu, 18 Jun 2026 02:50:00 +0800
 
