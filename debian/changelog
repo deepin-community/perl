@@ -1,3 +1,11 @@
+perl (5.36.0-10deepin4) unstable; urgency=medium
+
+  * d/p/0069-Fix-CVE-2025-15649-uncaught-exception-in-dosToUnixTime.patch
+    Fixes CVE-2025-15649: Uncaught exception in IO::Uncompress::Unzip
+    _dosToUnixTime with malformed DOS date.
+
+ -- hudeng <hudeng@deepin.org>  Thu, 18 Jun 2026 02:50:00 +0800
+
 perl (5.36.0-10deepin3) unstable; urgency=medium
 
   * d/p/0061-Add-verify_SSL-1-to-HTTP-Tiny-to-verify-https-server.patch
