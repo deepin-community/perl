@@ -66,3 +66,4 @@ fixes/CVE-2025-40909-microperl.diff
 0066-perl-perl-security-147-test-cases.patch
 0067-perl-perl-security-147-test-against-the-actual-chara.patch
 0068-Validate-symlink-and-hardlink-linkname-in-SECURE-MOD.patch
+CVE-2026-57433.patch
