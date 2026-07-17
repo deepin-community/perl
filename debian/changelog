@@ -1,3 +1,9 @@
+perl (5.36.0-10deepin4) unstable; urgency=medium
+
+  * fix(cve): CVE-2026-57433
+
+ -- deepin-ci-robot <packages@deepin.org>  Fri, 17 Jul 2026 13:30:02 +0800
+
 perl (5.36.0-10deepin3) unstable; urgency=medium
 
   * d/p/0061-Add-verify_SSL-1-to-HTTP-Tiny-to-verify-https-server.patch
