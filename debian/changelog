@@ -1,3 +1,15 @@
+perl (5.36.0-10deepin6) unstable; urgency=medium
+
+  * fix(cve): CVE-2011-10043
+
+ -- deepin-ci-robot <packages@deepin.org>  Tue, 21 Jul 2026 02:18:26 +0800
+
+perl (5.36.0-10deepin5) unstable; urgency=medium
+
+  * fix(cve): CVE-2011-10043
+
+ -- deepin-ci-robot <packages@deepin.org>  Tue, 21 Jul 2026 02:18:18 +0800
+
 perl (5.36.0-10deepin4) unstable; urgency=medium
 
   * fix(cve): CVE-2026-7010
