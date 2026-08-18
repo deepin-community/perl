@@ -1,9 +1,10 @@
-perl (5.36.0-10deepin5) UNRELEASED; urgency=medium
+perl (5.36.0-10deepin6) unstable; urgency=medium
 
   * fix(cve): CVE-2026-57432 - pp_pack.c: Avoid ssize_t overflow when
     calculating the size of a structu
+  * fix(cve): CVE-2026-13221
 
- -- deepin-ci-robot <packages@deepin.org>  Mon, 27 Jul 2026 14:31:40 +0800
+ -- deepin-ci-robot <packages@deepin.org>  Wed, 19 Aug 2026 06:15:39 +0800
 
 perl (5.36.0-10deepin4) unstable; urgency=medium
 
