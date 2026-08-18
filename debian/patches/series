@@ -69,3 +69,4 @@ fixes/CVE-2025-40909-microperl.diff
 CVE-2026-57432.patch
 CVE-2026-57433.patch
 CVE-2026-13221.patch
+CVE-2026-12087.patch
