@@ -1,3 +1,12 @@
+perl (5.36.0-10deepin9) unstable; urgency=medium
+
+  * fix(cve): CVE-2026-19487 (unknown) - regexec.c - Fix GH 22892 - AHO-
+    CORASICK edge case issue   Upstream:
+    https://github.com/Perl/perl5/commit/1a21abacaf6f684928bae8baaa15373
+    3c8c238eb
+
+ -- deepin-ci-robot <packages@deepin.org>  Wed, 16 Sep 2026 09:12:05 +0800
+
 perl (5.36.0-10deepin8) unstable; urgency=medium
 
   * fix(cve): CVE-2026-7017
