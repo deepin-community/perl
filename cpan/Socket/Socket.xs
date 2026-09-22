@@ -1270,28 +1270,37 @@ pack_ip_mreq(multiaddr, interface=&PL_sv_undef)
 	struct ip_mreq mreq;
 	char * multiaddrbytes;
 	char * interfacebytes;
-	STRLEN len;
-	if (DO_UTF8(multiaddr) && !sv_utf8_downgrade(multiaddr, 1))
-		croak("Wide character in %s", "Socket::pack_ip_mreq");
-	multiaddrbytes = SvPVbyte(multiaddr, len);
-	if (len != sizeof(mreq.imr_multiaddr))
-		croak("Bad arg length %s, length is %" UVuf
-                      ", should be %" UVuf,
-		      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_multiaddr));
+
+	{
+		if (DO_UTF8(multiaddr) && !sv_utf8_downgrade(multiaddr, 1))
+			croak("Wide character in %s", "Socket::pack_ip_mreq");
+
+		STRLEN len;
+		multiaddrbytes = SvPVbyte(multiaddr, len);
+		if (len != sizeof(mreq.imr_multiaddr))
+			croak("Bad arg length %s, length is %" UVuf
+                              ", should be %" UVuf,
+			      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_multiaddr));
+	}
+
 	Zero(&mreq, sizeof(mreq), char);
 	Copy(multiaddrbytes, &mreq.imr_multiaddr, sizeof(mreq.imr_multiaddr), char);
 	if(SvOK(interface)) {
 		if (DO_UTF8(interface) && !sv_utf8_downgrade(interface, 1))
 			croak("Wide character in %s", "Socket::pack_ip_mreq");
+
+		STRLEN len;
 		interfacebytes = SvPVbyte(interface, len);
 		if (len != sizeof(mreq.imr_interface))
 			croak("Bad arg length %s, length is %" UVuf
                               ", should be %" UVuf,
 			      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_interface));
+
 		Copy(interfacebytes, &mreq.imr_interface, sizeof(mreq.imr_interface), char);
 	}
 	else
 		mreq.imr_interface.s_addr = INADDR_ANY;
+
 	ST(0) = sv_2mortal(newSVpvn((char *)&mreq, sizeof(mreq)));
 #else
 	not_here("pack_ip_mreq");
@@ -1332,36 +1341,50 @@ pack_ip_mreq_source(multiaddr, source, interface=&PL_sv_undef)
 	char * multiaddrbytes;
 	char * sourcebytes;
 	char * interfacebytes;
-	STRLEN len;
-	if (DO_UTF8(multiaddr) && !sv_utf8_downgrade(multiaddr, 1))
-		croak("Wide character in %s", "Socket::pack_ip_mreq_source");
-	multiaddrbytes = SvPVbyte(multiaddr, len);
-	if (len != sizeof(mreq.imr_multiaddr))
-		croak("Bad arg length %s, length is %" UVuf
-                      ", should be %" UVuf,
-		      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_multiaddr));
-	if (DO_UTF8(source) && !sv_utf8_downgrade(source, 1))
-		croak("Wide character in %s", "Socket::pack_ip_mreq_source");
-	if (len != sizeof(mreq.imr_sourceaddr))
-		croak("Bad arg length %s, length is %" UVuf
-                      ", should be %" UVuf,
-		      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_sourceaddr));
-	sourcebytes = SvPVbyte(source, len);
+
+	{
+		if (DO_UTF8(multiaddr) && !sv_utf8_downgrade(multiaddr, 1))
+			croak("Wide character in %s", "Socket::pack_ip_mreq_source");
+
+		STRLEN len;
+		multiaddrbytes = SvPVbyte(multiaddr, len);
+		if (len != sizeof(mreq.imr_multiaddr))
+			croak("Bad arg length %s, length is %" UVuf
+                              ", should be %" UVuf,
+			      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_multiaddr));
+	}
+
+	{
+		if (DO_UTF8(source) && !sv_utf8_downgrade(source, 1))
+			croak("Wide character in %s", "Socket::pack_ip_mreq_source");
+
+		STRLEN len;
+		sourcebytes = SvPVbyte(source, len);
+		if (len != sizeof(mreq.imr_sourceaddr))
+			croak("Bad arg length %s, length is %" UVuf
+                              ", should be %" UVuf,
+			      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_sourceaddr));
+	}
+
 	Zero(&mreq, sizeof(mreq), char);
 	Copy(multiaddrbytes, &mreq.imr_multiaddr, sizeof(mreq.imr_multiaddr), char);
 	Copy(sourcebytes, &mreq.imr_sourceaddr, sizeof(mreq.imr_sourceaddr), char);
 	if(SvOK(interface)) {
 		if (DO_UTF8(interface) && !sv_utf8_downgrade(interface, 1))
 			croak("Wide character in %s", "Socket::pack_ip_mreq");
+
+		STRLEN len;
 		interfacebytes = SvPVbyte(interface, len);
 		if (len != sizeof(mreq.imr_interface))
 			croak("Bad arg length %s, length is %" UVuf
                               ", should be %" UVuf,
 			      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_interface));
+
 		Copy(interfacebytes, &mreq.imr_interface, sizeof(mreq.imr_interface), char);
 	}
 	else
 		mreq.imr_interface.s_addr = INADDR_ANY;
+
 	ST(0) = sv_2mortal(newSVpvn((char *)&mreq, sizeof(mreq)));
 #else
 	PERL_UNUSED_VAR(multiaddr);

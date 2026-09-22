@@ -2641,6 +2641,8 @@ Perl_runops_debug(pTHX)
         ++PL_op_exec_cnt[PL_op->op_type];
 #endif
 #if defined DEBUGGING && !defined DEBUGGING_RE_ONLY
+/* disabled on Debian due to https://bugs.debian.org/902779 */
+#ifndef DEBIAN
         if (PL_curstackinfo->si_stack_hwm < PL_stack_sp - PL_stack_base)
             Perl_croak_nocontext(
                 "panic: previous op failed to extend arg stack: "
@@ -2648,6 +2650,7 @@ Perl_runops_debug(pTHX)
                     PL_stack_base, PL_stack_sp,
                     PL_stack_base + PL_curstackinfo->si_stack_hwm);
         PL_curstackinfo->si_stack_hwm = PL_stack_sp - PL_stack_base;
+#endif
 #endif
         if (PL_debug) {
             ENTER;

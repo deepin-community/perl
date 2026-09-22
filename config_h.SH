@@ -2515,6 +2515,13 @@ sed <<!GROK!THIS! >$CONFIG_H -e 's!^#undef\(.*/\)\*!/\*#define\1 \*!' -e 's!^#un
  */
 #$d_fdim HAS_FDIM		/**/
 
+/* HAS_FDOPENDIR:
+ *	This symbol, if defined, indicates that the fdopendir() routine is
+ *	available to open directories using an opened file descriptor already
+ *	referring to that directory.
+ */
+#$d_fdopendir HAS_FDOPENDIR		/**/
+
 /* HAS_FEGETROUND:
  *	This symbol, if defined, indicates that the fegetround routine is
  *	available to return the macro corresponding to the current rounding

@@ -2480,6 +2480,13 @@
  */
 /*#define HAS_FDIM		/ **/
 
+/* HAS_FDOPENDIR:
+ *	This symbol, if defined, indicates that the fdopendir() routine is
+ *	available to open directories using an opened file descriptor already
+ *	referring to that directory.
+ */
+/*#define HAS_FDOPENDIR		/ **/
+
 /* HAS_FEGETROUND:
  *	This symbol, if defined, indicates that the fegetround routine is
  *	available to return the macro corresponding to the current rounding
@@ -5340,6 +5347,6 @@
 #endif
 
 /* Generated from:
- * 87e5998978daf803d19866c43bca24d7c01dc74119650db16f8d18d83f355da9 config_h.SH
- * 1a5fe19cbcfd68ba70230580fd344189b5c78c11b2285efd5976366e51b3257e uconfig.sh
+ * 57ecebb7fc7e3ed45e00ca0e0af53d74ad39725a0c940647d7d9c33e5d3e98b8 config_h.SH
+ * 42c09d1ec67e7ea93ad71f8dcf212ba3ba8e6be29eb8ac0520e718b83e80e78e uconfig.sh
  * ex: set ro: */

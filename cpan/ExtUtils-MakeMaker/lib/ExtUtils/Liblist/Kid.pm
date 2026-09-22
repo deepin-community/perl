@@ -68,6 +68,8 @@ sub _unix_os2_ext {
         $potential_libs =~ s/(^|\s)(-(?:weak_|reexport_|lazy_)?framework)\s+(\S+)/$1-Wl,$2 -Wl,$3/g;
         $potential_libs =~ s/(^|\s)(-F)\s*(\S+)/$1-Wl,$2 -Wl,$3/g;
     }
+    # Debian-specific: don't use LD_RUN_PATH for standard dirs
+    $ld_run_path_seen{$_}++ for @libpath;
 
     foreach my $thislib ( Text::ParseWords::shellwords($potential_libs) ) {
         my ( $custom_name ) = '';

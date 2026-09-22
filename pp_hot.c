@@ -3285,14 +3285,19 @@ Perl_do_readline(pTHX)
                 || SNARF_EOF(gimme, PL_rs, io, sv)
                 || PerlIO_error(fp)))
         {
-            PerlIO_clearerr(fp);
             if (IoFLAGS(io) & IOf_ARGV) {
                 fp = nextargv(PL_last_in_gv, PL_op->op_flags & OPf_SPECIAL);
-                if (fp)
+                if (fp) {
                     continue;
+                }
                 (void)do_close(PL_last_in_gv, FALSE);
             }
             else if (type == OP_GLOB) {
+                /* clear any errors here so we only fail on the pclose()
+                   failing, which should only happen on the child
+                   failing
+                */
+                PerlIO_clearerr(fp);
                 if (!do_close(PL_last_in_gv, FALSE)) {
                     Perl_ck_warner(aTHX_ packWARN(WARN_GLOB),
                                    "glob failed (child exited with status %d%s)",
@@ -5352,6 +5357,8 @@ PP(pp_entersub)
         CvXSUB(cv)(aTHX_ cv);
 
 #if defined DEBUGGING && !defined DEBUGGING_RE_ONLY
+/* disabled on Debian due to https://bugs.debian.org/902779 */
+#ifndef DEBIAN
         /* This duplicates the check done in runops_debug(), but provides more
          * information in the common case of the fault being with an XSUB.
          *
@@ -5365,6 +5372,7 @@ PP(pp_entersub)
                     HvNAME(GvSTASH(CvGV(cv))), GvNAME(CvGV(cv)), CvFILE(cv),
                     PL_stack_base, PL_stack_sp,
                     PL_stack_base + PL_curstackinfo->si_stack_hwm);
+#endif
 #endif
         /* Enforce some sanity in scalar context. */
         if (is_scalar) {

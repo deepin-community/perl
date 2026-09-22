@@ -2321,13 +2321,8 @@ doc__install : doc_site_install
 	$(NOECHO) $(ECHO) INSTALLDIRS not defined, defaulting to INSTALLDIRS=site
 
 pure_perl_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
+	$(NOECHO) umask 022; $(MOD_INSTALL) \
 };
-
-    push @m,
-q{		read "}.$self->catfile('$(PERL_ARCHLIB)','auto','$(FULLEXT)','.packlist').q{" \
-		write "}.$self->catfile('$(DESTINSTALLARCHLIB)','auto','$(FULLEXT)','.packlist').q{" \
-} unless $self->{NO_PACKLIST};
 
     push @m,
 q{		"$(INST_LIB)" "$(DESTINSTALLPRIVLIB)" \
@@ -2341,7 +2336,7 @@ q{		"$(INST_LIB)" "$(DESTINSTALLPRIVLIB)" \
 
 
 pure_site_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
+	$(NOECHO) umask 02; $(MOD_INSTALL) \
 };
     push @m,
 q{		read "}.$self->catfile('$(SITEARCHEXP)','auto','$(FULLEXT)','.packlist').q{" \
@@ -2359,12 +2354,8 @@ q{		"$(INST_LIB)" "$(DESTINSTALLSITELIB)" \
 		"}.$self->catdir('$(PERL_ARCHLIB)','auto','$(FULLEXT)').q{"
 
 pure_vendor_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
+	$(NOECHO) umask 022; $(MOD_INSTALL) \
 };
-    push @m,
-q{		read "}.$self->catfile('$(VENDORARCHEXP)','auto','$(FULLEXT)','.packlist').q{" \
-		write "}.$self->catfile('$(DESTINSTALLVENDORARCH)','auto','$(FULLEXT)','.packlist').q{" \
-} unless $self->{NO_PACKLIST};
 
     push @m,
 q{		"$(INST_LIB)" "$(DESTINSTALLVENDORLIB)" \
@@ -2390,37 +2381,19 @@ doc_vendor_install :: all
 
     push @m, q{
 doc_perl_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to "$(DESTINSTALLARCHLIB)/perllocal.pod"
-	-$(NOECHO) $(MKPATH) "$(DESTINSTALLARCHLIB)"
-	-$(NOECHO) $(DOC_INSTALL) \
-		"Module" "$(NAME)" \
-		"installed into" "$(INSTALLPRIVLIB)" \
-		LINKTYPE "$(LINKTYPE)" \
-		VERSION "$(VERSION)" \
-		EXE_FILES "$(EXE_FILES)" \
-		>> "}.$self->catfile('$(DESTINSTALLARCHLIB)','perllocal.pod').q{"
 
 doc_site_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to "$(DESTINSTALLARCHLIB)/perllocal.pod"
-	-$(NOECHO) $(MKPATH) "$(DESTINSTALLARCHLIB)"
-	-$(NOECHO) $(DOC_INSTALL) \
+	$(NOECHO) $(ECHO) Appending installation info to "$(DESTINSTALLSITEARCH)/perllocal.pod"
+	-$(NOECHO) umask 02; $(MKPATH) "$(DESTINSTALLSITEARCH)"
+	-$(NOECHO) umask 02; $(DOC_INSTALL) \
 		"Module" "$(NAME)" \
 		"installed into" "$(INSTALLSITELIB)" \
 		LINKTYPE "$(LINKTYPE)" \
 		VERSION "$(VERSION)" \
 		EXE_FILES "$(EXE_FILES)" \
-		>> "}.$self->catfile('$(DESTINSTALLARCHLIB)','perllocal.pod').q{"
+		>> "}.$self->catfile('$(DESTINSTALLSITEARCH)','perllocal.pod').q{"
 
 doc_vendor_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to "$(DESTINSTALLARCHLIB)/perllocal.pod"
-	-$(NOECHO) $(MKPATH) "$(DESTINSTALLARCHLIB)"
-	-$(NOECHO) $(DOC_INSTALL) \
-		"Module" "$(NAME)" \
-		"installed into" "$(INSTALLVENDORLIB)" \
-		LINKTYPE "$(LINKTYPE)" \
-		VERSION "$(VERSION)" \
-		EXE_FILES "$(EXE_FILES)" \
-		>> "}.$self->catfile('$(DESTINSTALLARCHLIB)','perllocal.pod').q{"
 
 } unless $self->{NO_PERLLOCAL};
 
@@ -2429,13 +2402,11 @@ uninstall :: uninstall_from_$(INSTALLDIRS)dirs
 	$(NOECHO) $(NOOP)
 
 uninstall_from_perldirs ::
-	$(NOECHO) $(UNINSTALL) "}.$self->catfile('$(PERL_ARCHLIB)','auto','$(FULLEXT)','.packlist').q{"
 
 uninstall_from_sitedirs ::
 	$(NOECHO) $(UNINSTALL) "}.$self->catfile('$(SITEARCHEXP)','auto','$(FULLEXT)','.packlist').q{"
 
 uninstall_from_vendordirs ::
-	$(NOECHO) $(UNINSTALL) "}.$self->catfile('$(VENDORARCHEXP)','auto','$(FULLEXT)','.packlist').q{"
 };
 
     join("",@m);
@@ -2656,7 +2627,7 @@ MAP_PRELIBS   = $Config{perllibs} $Config{cryptlib}
 	($lperl = $libperl) =~ s/\$\(A\)/$self->{LIB_EXT}/;
     }
     unless ($libperl && -f $lperl) { # Ilya's code...
-	my $dir = $self->{PERL_SRC} || "$self->{PERL_ARCHLIB}/CORE";
+	my $dir = $self->{PERL_SRC} || "$self->{PERL_ARCHLIB}/../..";
 	$dir = "$self->{PERL_ARCHLIB}/.." if $self->{UNINSTALLED_PERL};
 	$libperl ||= "libperl$self->{LIB_EXT}";
 	$libperl   = "$dir/$libperl";
@@ -3080,7 +3051,7 @@ sub pasthru {
     my($sep) = $Is{VMS} ? ',' : '';
     $sep .= "\\\n\t";
 
-    foreach my $key (qw(LIB LIBPERL_A LINKTYPE OPTIMIZE
+    foreach my $key (qw(LIB LIBPERL_A LINKTYPE OPTIMIZE LD
                      PREFIX INSTALL_BASE)
                  )
     {

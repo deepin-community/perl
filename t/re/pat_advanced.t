@@ -2595,6 +2595,15 @@ EOF_DEBUG_OUT
                       {}, "Github Issue #19350, assert fail in "
                           . "Debug => 'ALL' from malformed qr// (heisenbug try $try)");
     }
+
+    { # GH #23388
+        fresh_perl_is(<<~'PROG', , "", {}, "Avoid trie overflow");
+            my $x = join "|", "aaa".."mzz";
+            my $y = join "|", "naa".."zzz";
+            use re 'Debug';
+            "fnord" =~ m/(?:$x)|(?:$y)/;
+            PROG
+    }
     {   # Related to GH $19350 but segfaults instead of asserts, and does so reliably, not randomly.
         # use re Debug => "PARSE" is similar to "ALL", but does not include the optimize info, so we
         # do not need to deal with normlazing memory addresses in the output.
@@ -2686,6 +2695,14 @@ first at 3
 Freeing REx: "(?<b>\g{c})(?<c>x)(?&b)"
 EOF_DEBUG_OUT
                       {}, "Related to Github Issue #19350, forward \\g{x} pattern segv under use re Debug => 'PARSE'");
+    }
+
+    {   # perl-security#140, read/write past buffer end
+        fresh_perl_like('qr/\p{utf8::perl x}/',
+                        qr/Illegal user-defined property name "utf8::perl x" in regex/,
+                        {}, "perl-security#140");
+        fresh_perl_is('qr/\p{utf8::_perl_surrogate}/', "",
+                        {}, "perl-security#140");
     }
 
 

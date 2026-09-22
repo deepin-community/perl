@@ -1091,7 +1091,7 @@ END
     my @man_cmds;
     foreach my $num (qw(1 3)) {
         my $pods = $self->{"MAN${num}PODS"};
-        my $p2m = sprintf <<'CMD', "\$(MAN${num}SECTION)", "$]" > 5.008 ? " -u" : "";
+        my $p2m = sprintf <<'CMD', "\$(MAN${num}EXT)", "$]" > 5.008 ? " -u" : "";
 	$(NOECHO) $(POD2MAN) --section=%s --perm_rw=$(PERM_RW)%s
 CMD
         push @man_cmds, $self->split_command($p2m, map {($_,$pods->{$_})} sort keys %$pods);
@@ -2740,6 +2740,8 @@ sub arch_check {
 
     my($pvol, $pthinks) = $self->splitpath($pconfig);
     my($cvol, $cthinks) = $self->splitpath($cconfig);
+
+    return 1 if $pthinks =~ /perl-base/; # https://bugs.debian.org/962138
 
     $pthinks = $self->canonpath($pthinks);
     $cthinks = $self->canonpath($cthinks);

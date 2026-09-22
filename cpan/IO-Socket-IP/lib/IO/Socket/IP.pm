@@ -33,6 +33,7 @@ use Socket 1.97 qw(
 );
 my $AF_INET6 = eval { Socket::AF_INET6() }; # may not be defined
 my $AI_ADDRCONFIG = eval { Socket::AI_ADDRCONFIG() } || 0;
+my $AI_NUMERICHOST = eval { Socket::AI_NUMERICHOST() } || 0;
 use POSIX qw( dup2 );
 use Errno qw( EINVAL EINPROGRESS EISCONN ENOTCONN ETIMEDOUT EWOULDBLOCK EOPNOTSUPP );
 
@@ -415,6 +416,8 @@ sub _io_socket_ip__configure
    my ( $arg ) = @_;
 
    my %hints;
+   my $localflags;
+   my $peerflags;
    my @localinfos;
    my @peerinfos;
 
@@ -426,9 +429,20 @@ sub _io_socket_ip__configure
 
    if( defined $arg->{GetAddrInfoFlags} ) {
       $hints{flags} = $arg->{GetAddrInfoFlags};
+      $localflags  = $arg->{GetAddrInfoFlags};
+      $peerflags  = $arg->{GetAddrInfoFlags};
    }
    else {
-      $hints{flags} = $AI_ADDRCONFIG;
+      if (defined $arg->{LocalHost} and $arg->{LocalHost} =~ /^\d+\.\d+\.\d+\.\d+$/) {
+              $localflags = $AI_NUMERICHOST;
+      } else {
+              $localflags = $AI_ADDRCONFIG;
+      }
+      if (defined $arg->{PeerHost} and $arg->{PeerHost} =~ /^\d+\.\d+\.\d+\.\d+$/) {
+              $peerflags = $AI_NUMERICHOST;
+      } elsif (defined $arg->{PeerHost} and $arg->{PeerHost} ne 'localhost') {
+              $peerflags = $AI_ADDRCONFIG;
+      }
    }
 
    if( defined( my $family = $arg->{Family} ) ) {
@@ -485,6 +499,7 @@ sub _io_socket_ip__configure
          my $fallback_port = $1;
 
       my %localhints = %hints;
+      $localhints{flags} = $localflags;
       $localhints{flags} |= AI_PASSIVE;
       ( my $err, @localinfos ) = getaddrinfo( $host, $service, \%localhints );
 
@@ -513,10 +528,12 @@ sub _io_socket_ip__configure
       defined $service and $service =~ s/\((\d+)\)$// and
          my $fallback_port = $1;
 
-      ( my $err, @peerinfos ) = getaddrinfo( $host, $service, \%hints );
+      my %peerhints = %hints;
+      $peerhints{flags} = $peerflags;
+      ( my $err, @peerinfos ) = getaddrinfo( $host, $service, \%peerhints );
 
       if( $err and defined $fallback_port ) {
-         ( $err, @peerinfos ) = getaddrinfo( $host, $fallback_port, \%hints );
+         ( $err, @peerinfos ) = getaddrinfo( $host, $fallback_port, \%peerhints );
       }
 
       if( $err ) {
@@ -596,6 +613,7 @@ sub _io_socket_ip__configure
       # If there wasn't, use getaddrinfo()'s AI_ADDRCONFIG side-effect to guess a
       # suitable family first.
       else {
+         $hints{flags} |= $AI_ADDRCONFIG;
          ( my $err, @infos ) = getaddrinfo( "", "0", \%hints );
          if( $err ) {
             $@ = "$err";

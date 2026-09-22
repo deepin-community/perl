@@ -4999,6 +4999,16 @@ S_study_chunk(pTHX_
                             tail = regnext( tail );
                         }
 
+                        /* The code below currently saves the difference from
+                         * start to finish in a 16-bit field, causing
+                         * GH #23388.  This defeats the design of batching
+                         * tries into chunks that each fit.  khw thinks it is
+                         * too late in the 5.44 cycle to relook at the design,
+                         * so for now anyway, don't make a trie that would
+                         * overflow */
+                        if (tail - startbranch >= U16_MAX) {
+                            continue;
+                        }
 
                         DEBUG_TRIE_COMPILE_r({
                             regprop(RExC_rx, RExC_mysv, tail, NULL, pRExC_state);
@@ -5916,6 +5926,13 @@ S_study_chunk(pTHX_
                                                (U8 *) SvEND(data->last_found))
                                 - (U8*)s;
                         l -= old;
+
+                        if (l > 0 &&
+                            (mincount >= SSize_t_MAX / (SSize_t)l
+                             || old > SSize_t_MAX - mincount * (SSize_t)l)) {
+                            FAIL("Regexp out of space");
+                        }
+
                         /* Get the added string: */
                         last_str = newSVpvn_utf8(s  + old, l, UTF);
                         last_chrs = UTF ? utf8_length((U8*)(s + old),
@@ -24178,7 +24195,7 @@ S_parse_uniprop_string(pTHX_
      * compile perl to know about them) */
     bool is_nv_type = FALSE;
 
-    unsigned int i, j = 0;
+    unsigned int i = 0, i_zero = 0, j = 0;
     int equals_pos = -1;    /* Where the '=' is found, or negative if none */
     int slash_pos  = -1;    /* Where the '/' is found, or negative if none */
     int table_index = 0;    /* The entry number for this property in the table
@@ -24312,9 +24329,13 @@ S_parse_uniprop_string(pTHX_
      * all of them are considered to be for that package.  For the purposes of
      * parsing the rest of the property, strip it off */
     if (non_pkg_begin == STRLENs("utf8::") && memBEGINPs(name, name_len, "utf8::")) {
-        lookup_name +=  STRLENs("utf8::");
-        j -=  STRLENs("utf8::");
-        equals_pos -=  STRLENs("utf8::");
+        lookup_name += STRLENs("utf8::");
+        j           -= STRLENs("utf8::");
+        equals_pos  -= STRLENs("utf8::");
+        i_zero       = STRLENs("utf8::");   /* When resetting 'i' to reparse
+                                               from the beginning, it has to be
+                                               set past what we're stripping
+                                               off */
         stripped_utf8_pkg = TRUE;
     }
 
@@ -24728,7 +24749,8 @@ S_parse_uniprop_string(pTHX_
 
             /* We set the inputs back to 0 and the code below will reparse,
              * using strict */
-            i = j = 0;
+            i = i_zero;
+            j = 0;
         }
     }
 
@@ -24749,7 +24771,7 @@ S_parse_uniprop_string(pTHX_
          * separates two digits */
         if (cur == '_') {
             if (    stricter
-                && (     i == 0 || (int) i == equals_pos || i == name_len- 1
+                && (   i == i_zero || (int) i == equals_pos || i == name_len- 1
                     || ! isDIGIT_A(name[i-1]) || ! isDIGIT_A(name[i+1])))
             {
                 lookup_name[j++] = '_';

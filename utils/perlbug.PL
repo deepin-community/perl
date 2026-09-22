@@ -267,7 +267,7 @@ sub Init {
     $ed = $opt{e} || $ENV{VISUAL} || $ENV{EDITOR} || $ENV{EDIT}
 	|| ($Is_VMS && "edit/tpu")
 	|| ($Is_MSWin32 && "notepad")
-	|| "vi";
+	|| "editor";
 
     # Not OK - provide build failure template by finessing OK report
     if ($opt{n}) {

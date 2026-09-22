@@ -477,6 +477,7 @@ d_fd_set=''
 d_fds_bits=''
 d_fdclose=''
 d_fdim=''
+d_fdopendir=''
 d_fegetround=''
 d_ffs=''
 d_ffsl=''
@@ -1472,7 +1473,6 @@ glibpth="/lib /usr/lib $xlibpth"
 glibpth="$glibpth /usr/ccs/lib /usr/ucblib /usr/local/lib"
 test -f /usr/shlib/libc.so && glibpth="/usr/shlib $glibpth"
 test -f /shlib/libc.so     && glibpth="/shlib $glibpth"
-test -d /usr/lib64         && glibpth="$glibpth /lib64 /usr/lib64 /usr/local/lib64"
 
 : Private path used by Configure to find libraries.  Its value
 : is prepended to libpth. This variable takes care of special
@@ -1503,8 +1503,7 @@ archname=''
 usereentrant='undef'
 : List of libraries we want.
 : If anyone needs extra -lxxx, put those in a hint file.
-libswanted="cl pthread socket bind inet nsl ndbm gdbm dbm db malloc dl ld"
-libswanted="$libswanted sun m crypt sec util c cposix posix ucb bsd BSD"
+libswanted='gdbm gdbm_compat db dl m c crypt'
 : We probably want to search /usr/shlib before most other libraries.
 : This is only used by the lib/ExtUtils/MakeMaker.pm routine extliblist.
 glibpth=`echo " $glibpth " | sed -e 's! /usr/shlib ! !'`
@@ -4936,7 +4935,7 @@ case "$ccname" in
 	if $test $# -gt 0; then
 	    for i in $*; do
 		case $realpath in
-		    */realpath) i=`$realpath $i` ;;
+		    */realpath) i=`$realpath --no-symlinks $i` ;;
 		esac
 		incpth="$incpth $i"
 		j="`$echo $i | $sed 's,/include[^/]*,/lib,'`"
@@ -4948,7 +4947,7 @@ case "$ccname" in
 	    for xxx in $inclibpth $loclibpth $plibpth $glibpth; do
 		if $test -d $xxx; then
 		    case $realpath in
-			*/realpath) xxx=`$realpath $xxx` ;;
+			*/realpath) xxx=`$realpath --no-symlinks $xxx` ;;
 		    esac
 		    case " $libpth " in
 		    *" $xxx "*) ;;
@@ -14051,6 +14050,10 @@ eval $inlibc
 
 : see if fdim exists
 set fdim d_fdim
+eval $inlibc
+
+: see if fdopendir exists
+set fdopendir d_fdopendir
 eval $inlibc
 
 : see if fegetround exists
@@ -24381,7 +24384,7 @@ sunos*X4*)
     ;;
 *) case "$usedl" in
     $define|true|[yY]*)
-	    set X `echo " $libs " | sed -e 's@ -lndbm @ @' -e 's@ -lgdbm @ @' -e 's@ -lgdbm_compat @ @' -e 's@ -ldbm @ @' -e 's@ -ldb @ @'`
+	    set X `echo " $libs " | sed -e 's@ -lgdbm @ @' -e 's@ -lgdbm_compat @ @' -e 's@ -ldb @ @'`
 	    shift
 	    perllibs="$*"
 	    ;;
@@ -24669,6 +24672,7 @@ d_fd_macros='$d_fd_macros'
 d_fd_set='$d_fd_set'
 d_fdclose='$d_fdclose'
 d_fdim='$d_fdim'
+d_fdopendir='$d_fdopendir'
 d_fds_bits='$d_fds_bits'
 d_fegetround='$d_fegetround'
 d_ffs='$d_ffs'

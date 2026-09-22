@@ -219,6 +219,7 @@ SKIP: {
 		}
 
     { #use case 1 - in memory extraction
+      local $Archive::Tar::INSECURE_EXTRACT_MODE=1;
 			my $t=Archive::Tar->new;
 			$t->read( $archname );
 			my $r = eval{ $t->extract };
@@ -230,6 +231,7 @@ SKIP: {
 
 		{ #use case 2 - iter extraction
 		  #$DB::single = 2;
+      local $Archive::Tar::INSECURE_EXTRACT_MODE=1;
 			my $next=Archive::Tar->iter( $archname, 1 );
 			my $failed = 0;
 			#use Data::Dumper;

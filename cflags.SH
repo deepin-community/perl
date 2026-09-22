@@ -473,6 +473,12 @@ for file do
     # or customize here
 
     case "$file" in
+    op|opmini) : work around http://bugs.debian.org/838613 869122 869373
+        case $archname in
+        hppa-*|sh4-*)
+            optimize="$optimize -O0";;
+        esac;;
+
     regcomp) : work around http://bugs.debian.org/754054
         case $archname in
         mips-*|mipsel-*)

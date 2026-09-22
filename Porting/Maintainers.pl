@@ -1040,14 +1040,10 @@ use File::Glob qw(:case);
     },
 
     'Socket' => {
-        'DISTRIBUTION' => 'PEVANS/Socket-2.032.tar.gz',
+        'DISTRIBUTION' => 'PEVANS/Socket-2.041.tar.gz',
+        'SYNCINFO'     => 'leo on Mon May  4 16:10:37 2026',
         'FILES'        => q[cpan/Socket],
-        # https://rt.cpan.org/Ticket/Display.html?id=142470&results=b81893fab36c7e48a07b4b763c03731a
-        # maybe others
-        'CUSTOMIZED' => [
-            'Socket.pm',
-            'Socket.xs',
-        ],
+        'EXCLUDED'     => ['.editorconfig'],
     },
 
     'Storable' => {

@@ -14,6 +14,9 @@ BEGIN {
   if ($Config{'d_msg'} ne 'define') {
     skip_all('-- $Config{d_msg} undefined');
   }
+  if ($Config{'archname'} =~ /gnux32/) {
+    skip_all('-- SysV IPC message queues are broken on x32, see https://bugs.debian.org/988900');
+  }
 }
 
 use strict;

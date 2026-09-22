@@ -1842,6 +1842,10 @@ the default value directly, e.g.:
 
     CCFLAGS => "$Config::Config{ccflags} ..."
 
+The default value is taken from $Config{ccflags}. When overriding
+CCFLAGS, make sure to include the $Config{ccflags} settings to avoid
+binary incompatibilities.
+
 =item CONFIG
 
 Arrayref. E.g. [qw(archname manext)] defines ARCHNAME & MANEXT from

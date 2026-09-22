@@ -24,6 +24,7 @@ use strict;
 use vars qw[$DEBUG $error $VERSION $WARN $FOLLOW_SYMLINK $CHOWN $CHMOD
             $DO_NOT_USE_PREFIX $HAS_PERLIO $HAS_IO_STRING $SAME_PERMISSIONS
             $INSECURE_EXTRACT_MODE $ZERO_PAD_NUMBERS @ISA @EXPORT $RESOLVE_SYMLINK
+            $MAX_FILE_SIZE
          ];
 
 @ISA                    = qw[Exporter];
@@ -39,6 +40,7 @@ $DO_NOT_USE_PREFIX      = 0;
 $INSECURE_EXTRACT_MODE  = 0;
 $ZERO_PAD_NUMBERS       = 0;
 $RESOLVE_SYMLINK        = $ENV{'PERL5_AT_RESOLVE_SYMLINK'} || 'speed';
+$MAX_FILE_SIZE          = 1024 * 1024 * 1024;
 
 BEGIN {
     use Config;
@@ -441,6 +443,14 @@ sub _read_tar {
             }
 
             my $block = BLOCK_SIZE->( $entry->size );
+
+            if ( $MAX_FILE_SIZE && $entry->size > $MAX_FILE_SIZE ) {
+                $self->_error( qq[Entry '] . $entry->full_path .
+                    qq[' declared size ] . $entry->size .
+                    qq[ bytes exceeds \$Archive::Tar::MAX_FILE_SIZE ] .
+                    qq[($MAX_FILE_SIZE); refusing to allocate] );
+                next LOOP;
+            }
 
             $data = $entry->get_content_by_ref;
 
@@ -944,6 +954,19 @@ sub _make_special_file {
     my $err;
 
     if( $entry->is_symlink ) {
+        if( !$INSECURE_EXTRACT_MODE ) {
+            my $linkname = $entry->linkname;
+            if( File::Spec->file_name_is_absolute($linkname) ) {
+                $self->_error( qq[Symlink '] . $entry->full_path .
+                    qq[' has absolute target. Not extracting under SECURE EXTRACT MODE] );
+                return;
+            }
+            if( grep { $_ eq '..' } File::Spec->splitdir($linkname) ) {
+                $self->_error( qq[Symlink '] . $entry->full_path .
+                    qq[' target attempts traversal. Not extracting under SECURE EXTRACT MODE] );
+                return;
+            }
+        }
         my $fail;
         if( ON_UNIX ) {
             symlink( $entry->linkname, $file ) or $fail++;
@@ -957,6 +980,23 @@ sub _make_special_file {
                 $entry->linkname .q[' failed] if $fail;
 
     } elsif ( $entry->is_hardlink ) {
+        if( !$INSECURE_EXTRACT_MODE ) {
+            my $linkname = $entry->linkname;
+            if( File::Spec->file_name_is_absolute($linkname) ) {
+                $self->_error( qq[Hardlink '] . $entry->full_path .
+                    qq[' has absolute target '$linkname'. Not extracting ] .
+                    qq[under SECURE EXTRACT MODE: extraction itself chmods ] .
+                    qq[the shared inode.] );
+                return;
+            }
+            if( grep { $_ eq '..' } File::Spec->splitdir($linkname) ) {
+                $self->_error( qq[Hardlink '] . $entry->full_path .
+                    qq[' target '$linkname' attempts traversal. Not ] .
+                    qq[extracting under SECURE EXTRACT MODE: extraction ] .
+                    qq[itself chmods the shared inode.] );
+                return;
+            }
+        }
         my $fail;
         if( ON_UNIX ) {
             link( $entry->linkname, $file ) or $fail++;
@@ -2162,6 +2202,13 @@ numbers. Added for compatibility with C<busybox> implementations.
 	Limitation
 
 		It won't work for terminal, pipe or sockets or every non seekable source.
+
+=head2 $Archive::Tar::MAX_FILE_SIZE
+
+This variable holds an upper bound on the per-entry declared size that
+C<Archive::Tar> will accept when reading an archive. Entries whose header
+claims a larger size are refused with an error before any read allocation.
+Defaults to 1 GiB. Set to 0 to disable the cap.
 
 =cut
 

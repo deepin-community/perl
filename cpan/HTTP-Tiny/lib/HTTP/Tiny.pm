@@ -40,10 +40,14 @@ sub _croak { require Carp; Carp::croak(@_) }
 #pod * C<timeout> — Request timeout in seconds (default is 60) If a socket open,
 #pod   read or write takes longer than the timeout, the request response status code
 #pod   will be 599.
-#pod * C<verify_SSL> — A boolean that indicates whether to validate the SSL
-#pod   certificate of an C<https> — connection (default is false)
+#pod * C<verify_SSL> — A boolean that indicates whether to validate the TLS/SSL
+#pod   certificate of an C<https> — connection (default is true)
 #pod * C<SSL_options> — A hashref of C<SSL_*> — options to pass through to
 #pod   L<IO::Socket::SSL>
+#pod * C<$ENV{PERL_HTTP_TINY_SSL_INSECURE_BY_DEFAULT}> - Changes the default
+#pod   certificate verification behavior to not check server identity if set to 1.
+#pod   Only effective if C<verify_SSL> is not set. Added in version 0.083.
+#pod
 #pod
 #pod An accessor/mutator method exists for each attribute.
 #pod
@@ -67,9 +71,9 @@ sub _croak { require Carp; Carp::croak(@_) }
 my @attributes;
 BEGIN {
     @attributes = qw(
-        cookie_jar default_headers http_proxy https_proxy keep_alive
-        local_address max_redirect max_size proxy no_proxy
-        SSL_options verify_SSL
+        allow_credentialed_redirects allow_downgrade cookie_jar default_headers
+        http_proxy https_proxy keep_alive local_address max_redirect max_size
+        proxy no_proxy SSL_options verify_SSL
     );
     my %persist_ok = map {; $_ => 1 } qw(
         cookie_jar default_headers max_redirect max_size
@@ -111,11 +115,17 @@ sub timeout {
 sub new {
     my($class, %args) = @_;
 
+    # Support lower case verify_ssl argument, but only if verify_SSL is not
+    # true.
+    if ( exists $args{verify_ssl} ) {
+        $args{verify_SSL}  ||= $args{verify_ssl};
+    }
+
     my $self = {
         max_redirect => 5,
         timeout      => defined $args{timeout} ? $args{timeout} : 60,
         keep_alive   => 1,
-        verify_SSL   => $args{verify_SSL} || $args{verify_ssl} || 0, # no verification by default
+        verify_SSL   => defined $args{verify_SSL} ? $args{verify_SSL} : _verify_SSL_default(),
         no_proxy     => $ENV{no_proxy},
     };
 
@@ -132,6 +142,13 @@ sub new {
     $self->_set_proxies;
 
     return $self;
+}
+
+sub _verify_SSL_default {
+    my ($self) = @_;
+    # Check if insecure default certificate verification behaviour has been
+    # changed by the user by setting PERL_HTTP_TINY_SSL_INSECURE_BY_DEFAULT=1
+    return (($ENV{PERL_HTTP_TINY_INSECURE_BY_DEFAULT} || '') eq '1') ? 0 : 1;
 }
 
 sub _set_proxies {
@@ -425,6 +442,7 @@ sub mirror {
 #pod =cut
 
 my %idempotent = map { $_ => 1 } qw/GET HEAD PUT DELETE OPTIONS TRACE/;
+my %sensitive_headers = map { $_ => 1 } qw/authorization cookie proxy-authorization/;
 
 sub request {
     my ($self, $method, $url, $args) = @_;
@@ -802,6 +820,7 @@ sub _prepare_headers_and_cb {
     for ($self->{default_headers}, $args->{headers}) {
         next unless defined;
         while (my ($k, $v) = each %$_) {
+            next if $args->{_strip_credentials} && exists $sensitive_headers{lc $k};
             $request->{headers}{lc $k} = $v;
             $request->{header_case}{lc $k} = $k;
         }
@@ -929,9 +948,24 @@ sub _maybe_redirect {
         and $headers->{location}
         and @{$args->{_redirects}} < $self->{max_redirect}
     ) {
-        my $location = ($headers->{location} =~ /^\//)
+        my $location = $headers->{location} =~ m{^//}
+        ? "$request->{scheme}:$headers->{location}"
+        : $headers->{location} =~ m{^/}
             ? "$request->{scheme}://$request->{host_port}$headers->{location}"
-            : $headers->{location} ;
+            : $headers->{location};
+        my ($to_scheme, $to_host, $to_port) = $self->_split_url($location);
+        if (!$self->{allow_downgrade} && $request->{scheme} eq 'https' && $to_scheme eq 'http' ) {
+            return;
+        }
+        if (
+            !$self->{allow_credentialed_redirects}
+            && (   $request->{scheme} ne $to_scheme
+                || $request->{host} ne $to_host
+                || $request->{port} ne $to_port )
+        ) {
+            $args->{_strip_credentials} = 1;
+        }
+
         return (($status eq '303' ? 'GET' : $method), $location);
     }
     return;
@@ -1055,7 +1089,7 @@ sub new {
         timeout          => 60,
         max_line_size    => 16384,
         max_header_lines => 64,
-        verify_SSL       => 0,
+        verify_SSL       => HTTP::Tiny::_verify_SSL_default(),
         SSL_options      => {},
         %args
     }, $class;
@@ -1354,6 +1388,8 @@ sub write_header_lines {
         my $field_name = $HeaderCase{$k};
         my $v = $headers->{$k};
         for (ref $v eq 'ARRAY' ? @$v : $v) {
+            die(qq/Invalid HTTP header field value ($field_name): / . $Printable->($_). "\n")
+              unless $_ eq '' || /\A $Field_Content \z/xo;
             $_ = '' unless defined $_;
             $buf .= "$field_name: $_\x0D\x0A";
         }
@@ -1544,6 +1580,12 @@ sub read_response_header {
 sub write_request_header {
     @_ == 5 || die(q/Usage: $handle->write_request_header(method, request_uri, headers, header_case)/ . "\n");
     my ($self, $method, $request_uri, $headers, $header_case) = @_;
+
+    die (q/Invalid characters in Request-URI /. $Printable->($request_uri). "\n")
+      if $request_uri =~ /[\x00-\x20\x7F]/;
+
+    die (q/Invalid characters in Method /. $Printable->($method). "\n")
+      if $method =~ /[\x00-\x20\x7F]/;
 
     return $self->write_header_lines($headers, $header_case, "$method $request_uri HTTP/1.1\x0D\x0A");
 }
@@ -1887,8 +1929,7 @@ Don't use C<get> when you really want C<GET>.  See L<LIMITATIONS> for
 how this applies to redirection.
 
 If the URL includes a "user:password" stanza, they will be used for Basic-style
-authorization headers.  (Authorization headers will not be included in a
-redirected request.) For example:
+authorization headers.  For example:
 
     $http->request('GET', 'http://Aladdin:open sesame@example.com/');
 
@@ -1896,6 +1937,10 @@ If the "user:password" stanza contains reserved characters, they must
 be percent-escaped:
 
     $http->request('GET', 'http://john%40example.com:password@example.com/');
+
+Caller-supplied C<Authorization>, C<Cookie> and C<Proxy-Authorization> headers
+are stripped on cross-origin redirects. See L</new>'s
+C<allow_credentialed_redirects> attribute to opt out.
 
 A hashref of options may be appended to modify the request.
 
@@ -2043,11 +2088,11 @@ proxy
 timeout
 verify_SSL
 
-=head1 SSL SUPPORT
+=head1 TLS/SSL SUPPORT
 
 Direct C<https> connections are supported only if L<IO::Socket::SSL> 1.56 or
 greater and L<Net::SSLeay> 1.49 or greater are installed. An error will occur
-if new enough versions of these modules are not installed or if the SSL
+if new enough versions of these modules are not installed or if the TLS
 encryption fails. You can also use C<HTTP::Tiny::can_ssl()> utility function
 that returns boolean to see if the required modules are installed.
 
@@ -2055,7 +2100,7 @@ An C<https> connection may be made via an C<http> proxy that supports the CONNEC
 command (i.e. RFC 2817).  You may not proxy C<https> via a proxy that itself
 requires C<https> to communicate.
 
-SSL provides two distinct capabilities:
+TLS/SSL provides two distinct capabilities:
 
 =over 4
 
@@ -2069,24 +2114,17 @@ Verification of server identity
 
 =back
 
-B<By default, HTTP::Tiny does not verify server identity>.
+B<By default, HTTP::Tiny verifies server identity>.
 
-Server identity verification is controversial and potentially tricky because it
-depends on a (usually paid) third-party Certificate Authority (CA) trust model
-to validate a certificate as legitimate.  This discriminates against servers
-with self-signed certificates or certificates signed by free, community-driven
-CA's such as L<CAcert.org|http://cacert.org>.
+This was changed in version 0.083 due to security concerns. The previous default
+behavior can be enabled by setting C<$ENV{PERL_HTTP_TINY_SSL_INSECURE_BY_DEFAULT}>
+to 1.
 
-By default, HTTP::Tiny does not make any assumptions about your trust model,
-threat level or risk tolerance.  It just aims to give you an encrypted channel
-when you need one.
-
-Setting the C<verify_SSL> attribute to a true value will make HTTP::Tiny verify
-that an SSL connection has a valid SSL certificate corresponding to the host
-name of the connection and that the SSL certificate has been verified by a CA.
-Assuming you trust the CA, this will protect against a L<man-in-the-middle
-attack|http://en.wikipedia.org/wiki/Man-in-the-middle_attack>.  If you are
-concerned about security, you should enable this option.
+Verification is done by checking that that the TLS/SSL connection has a valid
+certificate corresponding to the host name of the connection and that the
+certificate has been verified by a CA. Assuming you trust the CA, this will
+protect against L<machine-in-the-middle
+attacks|http://en.wikipedia.org/wiki/Machine-in-the-middle_attack>.
 
 Certificate verification requires a file containing trusted CA certificates.
 
@@ -2094,34 +2132,26 @@ If the environment variable C<SSL_CERT_FILE> is present, HTTP::Tiny
 will try to find a CA certificate file in that location.
 
 If the L<Mozilla::CA> module is installed, HTTP::Tiny will use the CA file
-included with it as a source of trusted CA's.  (This means you trust Mozilla,
-the author of Mozilla::CA, the CPAN mirror where you got Mozilla::CA, the
-toolchain used to install it, and your operating system security, right?)
+included with it as a source of trusted CA's.
 
 If that module is not available, then HTTP::Tiny will search several
 system-specific default locations for a CA certificate file:
 
-=over 4
-
-=item *
-
-/etc/ssl/certs/ca-certificates.crt
-
-=item *
-
-/etc/pki/tls/certs/ca-bundle.crt
-
-=item *
-
-/etc/ssl/ca-bundle.pem
-
-=back
+=for :list
+* /etc/ssl/certs/ca-certificates.crt
+* /etc/pki/tls/certs/ca-bundle.crt
+* /etc/ssl/ca-bundle.pem
+* /etc/openssl/certs/ca-certificates.crt
+* /etc/ssl/cert.pem
+* /usr/local/share/certs/ca-root-nss.crt
+* /etc/pki/tls/cacert.pem
+* /etc/certs/ca-certificates.crt
 
 An error will be occur if C<verify_SSL> is true and no CA certificate file
 is available.
 
-If you desire complete control over SSL connections, the C<SSL_options> attribute
-lets you provide a hash reference that will be passed through to
+If you desire complete control over TLS/SSL connections, the C<SSL_options>
+attribute lets you provide a hash reference that will be passed through to
 C<IO::Socket::SSL::start_SSL()>, overriding any options set by HTTP::Tiny. For
 example, to provide your own trusted CA file:
 
@@ -2131,7 +2161,7 @@ example, to provide your own trusted CA file:
 
 The C<SSL_options> attribute could also be used for such things as providing a
 client certificate for authentication to a server or controlling the choice of
-cipher used for the SSL connection. See L<IO::Socket::SSL> documentation for
+cipher used for the TLS/SSL connection. See L<IO::Socket::SSL> documentation for
 details.
 
 =head1 PROXY SUPPORT
