@@ -7,6 +7,10 @@ perl (5.36.0-10deepin9) unstable; urgency=medium
   * fix(cve): CVE-2026-7010 (medium) - CVE-2026-7010: fix for request /
     header smuggling   Upstream: https://github.com/Perl-Toolchain-
     Gang/HTTP-Tiny/commit/d73c7651e82ace02693842df55928b6c3ae7c38d.patch
+  * fix(cve): CVE-2025-15649 (medium) - [PATCH] Enhance _dosToUnixTime
+    to handle zero and invalid datetime values; add tests for edge
+    cases. Fixes #65   Upstream: https://github.com/pmqs/IO-
+    Compress/commit/fd28c1d2374eee9811f6d0c5bddc0957abdf1da8.patch
 
  -- deepin-ci-robot <packages@deepin.org>  Wed, 16 Sep 2026 09:12:05 +0800
 
